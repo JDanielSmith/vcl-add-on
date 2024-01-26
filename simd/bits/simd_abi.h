@@ -12,9 +12,9 @@ namespace simd
 	{
 		namespace simd_abi
 		{
-			template<simd_size_type N> struct fixed_size
+			template<size_type N> struct fixed_size
 			{
-				static constexpr simd_size_type size = N;
+				static constexpr size_type size = N;
 			};
 		} // simd_abi
 	}
