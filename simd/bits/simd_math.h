@@ -22,11 +22,11 @@ namespace VCL_NAMESPACE {
 namespace simd
 {
 	template<typename T, typename Abi>
-	inline auto atan2(basic_simd<T, Abi> y, basic_simd<T, Abi> x)
+	inline basic_simd<T, Abi> atan2(basic_simd<T, Abi> y, basic_simd<T, Abi> x)
 	{
-		return basic_simd<T, Abi>(atan2(y.v_, x.v_));
+		using Vec_type = basic_simd<T, Abi>::Vec_type;
+		return atan2(Vec_type(y), Vec_type(x));
 	}
-
 }
 
 #ifdef VCL_NAMESPACE

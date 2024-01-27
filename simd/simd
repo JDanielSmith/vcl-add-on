@@ -1,17 +1,5 @@
 #pragma once
 
-#if _MSC_VER
-#pragma warning(push)
-#pragma warning(disable: 4100) // '...': unreferenced formal parameter
-#pragma warning(disable: 4127) // conditional expression is constant
-#pragma warning(disable: 4244) // '...': conversion from '...' to '...', possible loss of data
-#pragma warning(disable: 4723) // potential divide by 0
-#endif
-#include "vectorclass.h"
-#if _MSC_VER
-#pragma warning(pop)
-#endif
-
 #include "bits/simd_detail.h"
 #include "bits/simd.h"
 #include "bits/simd_basic.h"
@@ -24,7 +12,3 @@
 #include "bits/simd_x86.h"
 #endif
 #include "bits/simd_math.h"
-
-#include "bits/simd_basic_.h"
-#include "bits/simd_basic_mask_.h"
-

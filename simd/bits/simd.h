@@ -12,6 +12,8 @@ namespace simd
 	{
 		using size_type = int;  // "simd-size-type is an exposition-only alias for a signed integer type"
 
+		//template <typename T> constexpr size_t mask_element_size;
+
 		// "a signed integer type T so that sizeof(T) == Bytes."
 		template <size_t Bytes> struct integer_from_;
 		template<> struct integer_from_<8> { using type = std::int8_t; };

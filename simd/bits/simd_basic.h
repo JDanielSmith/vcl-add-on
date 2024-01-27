@@ -1,9 +1,22 @@
 #pragma once
 
 #include <memory>
+#include <type_traits>
 
 #include "simd.h"
 #include "simd_abi.h"
+
+#if _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4100) // '...': unreferenced formal parameter
+#pragma warning(disable: 4127) // conditional expression is constant
+#pragma warning(disable: 4244) // '...': conversion from '...' to '...', possible loss of data
+#pragma warning(disable: 4723) // potential divide by 0
+#endif
+#include "vectorclass.h"
+#if _MSC_VER
+#pragma warning(pop)
+#endif
 
 #ifdef VCL_NAMESPACE
 namespace VCL_NAMESPACE {
@@ -11,64 +24,25 @@ namespace VCL_NAMESPACE {
 
 namespace simd
 {
-	namespace details
-	{
-        // Vec_N_T<8, int32_t> == Vec8i
-        // https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
-        template <size_t elements_per_vector, typename T> struct Vec_N_T;
-
-        // Table 2.1 from https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
-        // 128 Total bits
-        template<> struct Vec_N_T<16, int8_t> final { using type = Vec16c; };
-        template<> struct Vec_N_T<16, uint8_t> final { using type = Vec16uc; };
-        template<> struct Vec_N_T<8, int16_t> final { using type = Vec8s; };
-        template<> struct Vec_N_T<8, uint16_t> final { using type = Vec8us; };
-        template<> struct Vec_N_T<4, int32_t> final { using type = Vec4i; };
-        template<> struct Vec_N_T<4, uint32_t> final { using type = Vec4ui; };
-        template<> struct Vec_N_T<2, int64_t> final { using type = Vec2q; };
-        template<> struct Vec_N_T<2, uint64_t> final { using type = Vec2uq; };
-        // 256 Total bits
-        template<> struct Vec_N_T<32, int8_t> final { using type = Vec32c; };
-        template<> struct Vec_N_T<32, uint8_t> final { using type = Vec32uc; };
-        template<> struct Vec_N_T<16, int16_t> final { using type = Vec16s; };
-        template<> struct Vec_N_T<16, uint16_t> final { using type = Vec16us; };
-        template<> struct Vec_N_T<8, int32_t> final { using type = Vec8i; };
-        template<> struct Vec_N_T<8, uint32_t> final { using type = Vec8ui; };
-        template<> struct Vec_N_T<4, int64_t> final { using type = Vec4q; };
-        template<> struct Vec_N_T<4, uint64_t> final { using type = Vec4uq; };
-        // 512 Total bits
-        template<> struct Vec_N_T<64, int8_t> final { using type = Vec64c; };
-        template<> struct Vec_N_T<64, uint8_t> final { using type = Vec64uc; };
-        template<> struct Vec_N_T<32, int16_t> final { using type = Vec32s; };
-        template<> struct Vec_N_T<32, uint16_t> final { using type = Vec32us; };
-        template<> struct Vec_N_T<16, int32_t> final { using type = Vec16i; };
-        template<> struct Vec_N_T<16, uint32_t> final { using type = Vec16ui; };
-        template<> struct Vec_N_T<8, int64_t> final { using type = Vec8q; };
-        template<> struct Vec_N_T<8, uint64_t> final { using type = Vec8uq; };
-
-        // Table 2.2 from https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
-        // 128 Total bits
-        template<> struct Vec_N_T<4, float> final { using type = Vec4f; };
-        template<> struct Vec_N_T<2, double> final { using type = Vec2d; };
-        // 256 Total bits
-        template<> struct Vec_N_T<8, float> final { using type = Vec8f; };
-        template<> struct Vec_N_T<4, double> final { using type = Vec4d; };
-        // 512 Total bits
-        template<> struct Vec_N_T<16, float> final { using type = Vec16f; };
-        template<> struct Vec_N_T<8, double> final { using type = Vec8d; };
-	}
-
-	template<typename T, typename Abi = details::simd_abi::fixed_size<4>>
+    // The proposal calls for explicit specializations of `basic_simd`; that's because
+    // normal implementations will need code specific to each specialization.
+    // Since this is built on VCL, that work has already been done, it's
+    // just called `Vec4i` instead of `basic_simd<int, 4>`.
+	template<typename T, typename Abi = details::simd_abi::native_abi<T>>
 	class basic_simd {
 	public:
 		using value_type = T;
 		//using reference = see below;
+		//using mask_type = basic_simd_mask<T, Abi>; // TODO: basic_simd_mask<sizeof(T), abi_type>;
+        using abi_type = Abi;
 
-		static constexpr details::size_type size = Abi::size;
+		using details_Vec_type_ = typename abi_type::type; // e.g., Vec4i
+
+		static constexpr std::integral_constant<details::size_type, 16> size;
 		 
 		constexpr basic_simd() noexcept = default;
 
-		// [simd.ctor], basic_simd constructors
+		// [simd.ctor]
 		template<typename U> constexpr basic_simd(U&& value) noexcept : v_(value) {}
 		template<typename U, typename UAbi>
 		constexpr explicit basic_simd(const basic_simd<U, UAbi>& other) noexcept : v_(other.v_) { }
@@ -78,12 +52,16 @@ namespace simd
 		}
 
     private:
-        using vcl_type = details::Vec_N_T<size, T>::type; // e.g., Vec4i
-        vcl_type v_;
+		details_Vec_type_ v_;
+    public:
+        // "Implementations should enable explicit conversion from and to implementation-defined types.
+        // This adds one or more of the following declarations to class `basic_simd`:"
+  		constexpr explicit operator details_Vec_type_() const { return v_; }
+		constexpr explicit basic_simd(const details_Vec_type_& init) : v_(init) { }
 	};
 
-	template<typename T, details::size_type N = basic_simd<T>::size>
-	using simd = basic_simd<T, details::simd_abi::fixed_size<N>>;
+	template<typename T, details::size_type N = basic_simd<T>::size()>
+	using simd = basic_simd<T, details::simd_abi::deduce_t<T, N>>;
 }
 
 #ifdef VCL_NAMESPACE
