@@ -78,37 +78,34 @@ namespace simd
 
 
 	// "... The specialization basic_simd<T, Abi> is supported if ... Abi is simd_abi::fixed_size<N>, ..."
-	//template<> class basic_simd<float, details::simd_abi::Vec_tag<float, 16>> { // details::simd_abi::fixed_size<16>
-	//public:
-	//	using value_type = float;
-	//	//using reference = see below;
-	//	//using mask_type = basic_simd_mask<T, Abi>; // TODO: basic_simd_mask<sizeof(T), abi_type>;
-	//	using abi_type = details::simd_abi::Vec_tag<float, 16>;
+	template<> class basic_simd<float, details::simd_abi::Vec_tag<float, 16>> { // details::simd_abi::fixed_size<16>
+	public:
+		using value_type = float;
+		//using reference = see below;
+		//using mask_type = basic_simd_mask<T, Abi>; // TODO: basic_simd_mask<sizeof(T), abi_type>;
+		using abi_type = details::simd_abi::Vec_tag<float, 16>;
 
-	//	static constexpr std::integral_constant<details::size_type, 16> size;
+		static constexpr std::integral_constant<details::size_type, 16> size;
 
-	//	constexpr basic_simd() noexcept = default;
+		constexpr basic_simd() noexcept = default;
 
-	//	// [simd.ctor]
-	//	template<typename U> constexpr basic_simd(U&& value) noexcept : v_(value) {}
-	//	template<typename U, typename UAbi>
-	//	constexpr explicit basic_simd(const basic_simd<U, UAbi>& other) noexcept : v_(other.v_) {}
-	//	template<typename G> constexpr explicit basic_simd(G&& gen, std::nullptr_t /*TODO: remove*/) noexcept {}
+		// [simd.ctor]
+		template<typename U> constexpr basic_simd(U&& value) noexcept : v_(value) {}
+		template<typename U, typename UAbi>
+		constexpr explicit basic_simd(const basic_simd<U, UAbi>& other) noexcept : v_(other.v_) {}
+		template<typename G> constexpr explicit basic_simd(G&& gen, std::nullptr_t /*TODO: remove*/) noexcept {}
 
-	//private:
-	//	using Vec_type = Vec16f;
-	//	Vec_type v_;
-	//public:
-	//	// "Implementations should enable explicit conversion from and to implementation-defined types.
-	//	// This adds one or more of the following declarations to class `basic_simd`:"
-	//	constexpr explicit operator Vec_type() const { return v_; }
-	//	constexpr explicit basic_simd(const Vec_type& init) : v_(init) { }
-	//};
+	private:
+		using Vec_type = Vec16f;
+		Vec_type v_;
+	public:
+		// "Implementations should enable explicit conversion from and to implementation-defined types.
+		// This adds one or more of the following declarations to class `basic_simd`:"
+		constexpr explicit operator Vec_type() const { return v_; }
+		constexpr explicit basic_simd(const Vec_type& init) : v_(init) { }
+	};
 
-	//template<> class basic_simd<float, details::simd_abi::Vec_tag<float, details::max_vector_size>> /*details::simd_abi::fixed_size<16>*/
-	//: public details::Vec_basic_simd<details::max_vector_size, float> {
-	//};
-	template<> class basic_simd<float, details::simd_abi::fixed_size<16>>
+	template<> class basic_simd<float, details::simd_abi::Vec_tag<float, details::max_vector_size>> /*details::simd_abi::fixed_size<16>*/
 	: public details::Vec_basic_simd<details::max_vector_size, float> {
 	};
 
