@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "simd.h"
 #include "simd_abi.h"
 
@@ -9,54 +11,76 @@ namespace VCL_NAMESPACE {
 
 namespace simd
 {
+	namespace details
+	{
+        // Vec_N_T<8, int32_t> == Vec8i
+        // https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
+        template <size_t elements_per_vector, typename T> struct Vec_N_T;
+
+        // Table 2.1 from https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
+        // 128 Total bits
+        template<> struct Vec_N_T<16, int8_t> final { using type = Vec16c; };
+        template<> struct Vec_N_T<16, uint8_t> final { using type = Vec16uc; };
+        template<> struct Vec_N_T<8, int16_t> final { using type = Vec8s; };
+        template<> struct Vec_N_T<8, uint16_t> final { using type = Vec8us; };
+        template<> struct Vec_N_T<4, int32_t> final { using type = Vec4i; };
+        template<> struct Vec_N_T<4, uint32_t> final { using type = Vec4ui; };
+        template<> struct Vec_N_T<2, int64_t> final { using type = Vec2q; };
+        template<> struct Vec_N_T<2, uint64_t> final { using type = Vec2uq; };
+        // 256 Total bits
+        template<> struct Vec_N_T<32, int8_t> final { using type = Vec32c; };
+        template<> struct Vec_N_T<32, uint8_t> final { using type = Vec32uc; };
+        template<> struct Vec_N_T<16, int16_t> final { using type = Vec16s; };
+        template<> struct Vec_N_T<16, uint16_t> final { using type = Vec16us; };
+        template<> struct Vec_N_T<8, int32_t> final { using type = Vec8i; };
+        template<> struct Vec_N_T<8, uint32_t> final { using type = Vec8ui; };
+        template<> struct Vec_N_T<4, int64_t> final { using type = Vec4q; };
+        template<> struct Vec_N_T<4, uint64_t> final { using type = Vec4uq; };
+        // 512 Total bits
+        template<> struct Vec_N_T<64, int8_t> final { using type = Vec64c; };
+        template<> struct Vec_N_T<64, uint8_t> final { using type = Vec64uc; };
+        template<> struct Vec_N_T<32, int16_t> final { using type = Vec32s; };
+        template<> struct Vec_N_T<32, uint16_t> final { using type = Vec32us; };
+        template<> struct Vec_N_T<16, int32_t> final { using type = Vec16i; };
+        template<> struct Vec_N_T<16, uint32_t> final { using type = Vec16ui; };
+        template<> struct Vec_N_T<8, int64_t> final { using type = Vec8q; };
+        template<> struct Vec_N_T<8, uint64_t> final { using type = Vec8uq; };
+
+        // Table 2.2 from https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
+        // 128 Total bits
+        template<> struct Vec_N_T<4, float> final { using type = Vec4f; };
+        template<> struct Vec_N_T<2, double> final { using type = Vec2d; };
+        // 256 Total bits
+        template<> struct Vec_N_T<8, float> final { using type = Vec8f; };
+        template<> struct Vec_N_T<4, double> final { using type = Vec4d; };
+        // 512 Total bits
+        template<> struct Vec_N_T<16, float> final { using type = Vec16f; };
+        template<> struct Vec_N_T<8, double> final { using type = Vec8d; };
+	}
+
 	template<typename T, typename Abi = details::simd_abi::fixed_size<4>>
 	class basic_simd {
 	public:
 		using value_type = T;
 		//using reference = see below;
-		using mask_type = basic_simd_mask<sizeof(T), Abi>;
-		using abi_type = Abi;
 
 		static constexpr details::size_type size = Abi::size;
-
+		 
 		constexpr basic_simd() noexcept = default;
+
+		// [simd.ctor], basic_simd constructors
+		template<typename U> constexpr basic_simd(U&& value) noexcept : v_(value) {}
+		template<typename U, typename UAbi>
+		constexpr explicit basic_simd(const basic_simd<U, UAbi>& other) noexcept : v_(other.v_) { }
+		template<typename G> constexpr explicit basic_simd(G&& gen, std::nullptr_t /*TODO: remove*/) noexcept
+		{
+
+		}
+
+    private:
+        using vcl_type = details::Vec_N_T<size, T>::type; // e.g., Vec4i
+        vcl_type v_;
 	};
-
-	#define VECTORCLASS_basic_simd(vec_, type_, size_) \
-	template<> class basic_simd<type_, details::simd_abi::fixed_size<size_>> { public: vec_ v_; \
-		static constexpr details::size_type size = size_; \
-		constexpr explicit operator vec_() const { return v_; } \
-		constexpr explicit basic_simd(const vec_& init) : v_(init) { } }
-	#define VECTORCLASS_basic_simd_(suffix_, size_bits_, size_) 	VECTORCLASS_basic_simd(Vec ## size_ ## suffix_, int ## size_bits_ ## _t, size_); \
-		VECTORCLASS_basic_simd(Vec ## size_ ## u ## suffix_, uint ## size_bits_ ## _t, size_)
-
-	// Table 2.1 from https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
-	// 128 Total bits
-	VECTORCLASS_basic_simd_(c, 8, 16); // Vec16c, Vec16uc
-	VECTORCLASS_basic_simd_(s, 16, 8); // Vec8s, Vec8us
-	VECTORCLASS_basic_simd_(i, 32, 4); // Vec4i, Vec4ui
-	VECTORCLASS_basic_simd_(q, 64, 2); // Vec2q, Vec2uq
-	// 256 Total bits
-	VECTORCLASS_basic_simd_(c, 8, 32); // Vec32c, Vec32uc
-	VECTORCLASS_basic_simd_(s, 16, 16); // Vec16s, Vec16us
-	VECTORCLASS_basic_simd_(i, 32, 8); // Vec8i, Vec8ui
-	VECTORCLASS_basic_simd_(q, 64, 4); // Vec4q, Vec4uq
-	// 512 Total bits
-	VECTORCLASS_basic_simd_(c, 8, 64); // Vec64c, Vec64uc
-	VECTORCLASS_basic_simd_(s, 16, 32); // Vec32s, Vec32us
-	VECTORCLASS_basic_simd_(i, 32, 16); // Vec16i, Vec16ui
-	VECTORCLASS_basic_simd_(q, 64, 8); // Vec8q, Vec8uq
-
-	// Table 2.2 from https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
-	// 128 Total bits
-	VECTORCLASS_basic_simd(Vec4f, float, 4);
-	VECTORCLASS_basic_simd(Vec2d, double, 2);
-	// 256 Total bits
-	VECTORCLASS_basic_simd(Vec8f, float, 8);
-	VECTORCLASS_basic_simd(Vec4d, double, 4);
-	// 512 Total bits
-	VECTORCLASS_basic_simd(Vec16f, float, 16);
-	VECTORCLASS_basic_simd(Vec8d, double, 8);
 
 	template<typename T, details::size_type N = basic_simd<T>::size>
 	using simd = basic_simd<T, details::simd_abi::fixed_size<N>>;

@@ -23,7 +23,9 @@ namespace VCL_NAMESPACE {
 namespace simd
 {
 	#define VECTORCLASS_basic_simd(vec_, type_, size_) \
-	template<> class basic_simd<type_, details::simd_abi::fixed_size<size_>> { public: vec_ v_; \
+	template<> class basic_simd<type_, details::simd_abi::fixed_size<size_>> { vec_ v_; public: \
+		using abi_type = details::simd_abi::fixed_size<size_>; \
+		using mask_type = basic_simd_mask<type_, abi_type>; /* TODO: basic_simd_mask<sizeof(T), abi_type>; */ \
 		static constexpr details::size_type size = size_; \
 		constexpr explicit operator vec_() const { return v_; } \
 		constexpr explicit basic_simd(const vec_& init) : v_(init) { } }

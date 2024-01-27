@@ -15,6 +15,7 @@
 #include "bits/simd_detail.h"
 #include "bits/simd.h"
 #include "bits/simd_basic.h"
+#include "bits/simd_basic_mask.h"
 #include "bits/simd_fixed_size.h"
 #include "bits/simd_scalar.h"
 #include "bits/simd_builtin.h"
@@ -24,4 +25,6 @@
 #endif
 #include "bits/simd_math.h"
 
+#include "bits/simd_basic_.h"
+#include "bits/simd_basic_mask_.h"
 

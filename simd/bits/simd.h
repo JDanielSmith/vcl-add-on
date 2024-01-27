@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #ifdef VCL_NAMESPACE
 namespace VCL_NAMESPACE {
 #endif
@@ -12,12 +14,12 @@ namespace simd
 
 		// "a signed integer type T so that sizeof(T) == Bytes."
 		template <size_t Bytes> struct integer_from_;
-		template<> struct integer_from_<8> { static constexpr size_type size = 1; };
-		template<> struct integer_from_<16> { static constexpr size_type size = 2; };
-		template<> struct integer_from_<32> { static constexpr size_type size = 4; };
-		template<> struct integer_from_<64> { static constexpr size_type size = 8; };
+		template<> struct integer_from_<8> { using type = std::int8_t; };
+		template<> struct integer_from_<16> { using type = std::int16_t; };
+		template<> struct integer_from_<32> { using type = std::int32_t; };
+		template<> struct integer_from_<64> { using type = std::int64_t; };
 		template <size_t Bytes>
-		using integer_from = integer_from_<Bytes>::size;
+		using integer_from = typename integer_from_<Bytes>::type;
 	}
 
 	// [simd.traits]
@@ -35,9 +37,8 @@ namespace simd
 	template<typename T, typename Abi> class basic_simd;
 
 	// [simd.mask]
-	template<size_t Bytes, typename Abi> class basic_simd_mask;
-	//template<class T, simd - size - type N = basic_simd_mask<sizeof(T)>::size()>
-	//using simd_mask = basic_simd_mask<sizeof(T), deduce - t<T, N>>;
+	//template<size_t Bytes, typename Abi> class basic_simd_mask;
+	template<typename T, typename Abi> class basic_simd_mask;
 
 	// [simd.creation]
 	// [simd.mask.reductions]
