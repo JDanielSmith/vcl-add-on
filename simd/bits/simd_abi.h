@@ -69,6 +69,14 @@ namespace simd
 
 	namespace details
 	{
+        #if MAX_VECTOR_SIZE >= 512
+        constexpr size_type max_vector_size = 512;
+        #elif MAX_VECTOR_SIZE >= 256
+        constexpr size_type max_vector_size = 256;
+        #else
+        constexpr size_type max_vector_size = 128;
+        #endif
+
 		namespace simd_abi
 		{           
             template<typename T, size_type N> struct Vec_tag {};
@@ -109,14 +117,6 @@ namespace simd
             template<> struct Vec_tag<double, 512> { static constexpr size_type size = 8; using type = Vec8d; };
 
             template<typename T, size_type N> using deduce_t = Vec_tag<T, N>;
-
-            #if MAX_VECTOR_SIZE >= 512
-            constexpr size_type max_vector_size = 512;
-            #elif MAX_VECTOR_SIZE >= 256
-            constexpr size_type max_vector_size = 256;
-            #else
-            constexpr size_type max_vector_size = 128;
-            #endif
 
             template<typename T>
             using native_abi = Vec_tag<T, max_vector_size>;
