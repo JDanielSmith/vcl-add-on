@@ -47,23 +47,31 @@ namespace simd
 		template<typename G> constexpr explicit basic_simd(G&& gen, std::nullptr_t /*TODO: remove*/) noexcept;
 	};
 
+	namespace details
+	{
+		template<typename T, typename Abi>
+		class Vec_basic_simd {
+		public:
+			using value_type = T;
+			//using reference = see below;
+			using mask_type = basic_simd_mask<T, Abi>; // TODO: basic_simd_mask<sizeof(T), Abi>; ???
+			using abi_type = Abi;
+
+			constexpr Vec_basic_simd() noexcept = default;
+
+			// [simd.ctor]
+			template<typename U> constexpr Vec_basic_simd(U&& value) noexcept {}
+			template<typename U, typename UAbi>
+			constexpr explicit Vec_basic_simd(const Vec_basic_simd<U, UAbi>& other) noexcept {}
+			template<typename G> constexpr explicit Vec_basic_simd(G&& gen, std::nullptr_t /*TODO: remove*/) noexcept {}
+		};
+	}
+
 	// "... The specialization basic_simd<T, Abi> is supported if ... Abi is simd_abi::fixed_size<N>, ..."
-	template<> class basic_simd<float, details::simd_abi::fixed_size<16>> {
+	template<> class basic_simd<float, details::simd_abi::fixed_size<16>> 
+	: public details::Vec_basic_simd<float, details::simd_abi::fixed_size<16>> {
 	public:
-		using value_type = float;
-		//using reference = see below;
-		using mask_type = basic_simd_mask<float, details::simd_abi::fixed_size<16>>; // TODO: basic_simd_mask<sizeof(float), details::simd_abi::fixed_size<16>>; ???
-		using abi_type = details::simd_abi::fixed_size<16>;
-
 		static constexpr std::integral_constant<details::size_type, 16> size;
-
-		constexpr basic_simd() noexcept = default;
-
-		// [simd.ctor]
-		template<typename U> constexpr basic_simd(U&& value) noexcept {}
-		template<typename U, typename UAbi>
-		constexpr explicit basic_simd(const basic_simd<U, UAbi>& other) noexcept;
-		template<typename G> constexpr explicit basic_simd(G&& gen, std::nullptr_t /*TODO: remove*/) noexcept;
 	};
 
 	/*
