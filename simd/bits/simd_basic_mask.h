@@ -82,36 +82,37 @@ namespace simd
 
     namespace details
     {
-        template<typename T, typename Abi>
+        template<typename T, typename Vec_b>
         class Vec_basic_simd_mask {
         public:
             using value_type = bool;
             //using reference = see below;
-            using abi_type = Abi;
+            using abi_type = details::simd_abi::fixed_size<Vec_b::size()>;
 
-            static constexpr auto size = basic_simd<details::integer_from<sizeof(T)>, Abi>::size; // TODO: basic_simd<details::integer_from<Bytes>, Abi>::size;
+            static constexpr auto size = basic_simd<details::integer_from<sizeof(T)>, abi_type>::size; // TODO: basic_simd<details::integer_from<Bytes>, Abi>::size;
 
             constexpr Vec_basic_simd_mask() noexcept = default;
 
             // [simd.ctor]
-            template<typename U> constexpr Vec_basic_simd_mask(U&& value) noexcept {}
-            template<typename U, typename UAbi>
-            constexpr explicit Vec_basic_simd_mask(const basic_simd<U, UAbi>& other) noexcept;
+            template<typename U> constexpr Vec_basic_simd_mask(U&& value) noexcept : v_(value) {}
+            template<typename U, typename UVec_b>
+            constexpr explicit Vec_basic_simd_mask(const Vec_basic_simd_mask<U, UVec_b>& other) noexcept : v_(other.v_) {}
             template<typename G> constexpr explicit Vec_basic_simd_mask(G&& gen, std::nullptr_t /*TODO: remove*/) noexcept;
+
+            // "Implementations should enable explicit conversion from and to implementation-defined types."
+            constexpr explicit operator Vec_b() const { return v_; }
+            constexpr explicit Vec_basic_simd_mask(const Vec_b& init) : v_(init) {}
+
+        private:
+            Vec_b v_;
         };
     }
 
     // "... The specialization basic_simd_mask<T, Abi> is supported if ... Abi is simd_abi::fixed_size<N>, ..."
-    template<> class basic_simd_mask<std::int32_t, details::simd_abi::fixed_size<16>>
-    : public details::Vec_basic_simd_mask<std::int32_t, details::simd_abi::fixed_size<16>> {
-    public:
-    };
+    template<> class basic_simd_mask<std::int32_t, details::simd_abi::fixed_size<16>> : public details::Vec_basic_simd_mask<std::int32_t, Vec16ib> { };
 
     // "... The specialization basic_simd_mask<T, Abi> is supported if ... Abi is simd_abi::fixed_size<N>, ..."
-    template<> class basic_simd_mask<float, details::simd_abi::fixed_size<16>> 
-    : public details::Vec_basic_simd_mask<float, details::simd_abi::fixed_size<16>> {
-    public:
-    };
+    template<> class basic_simd_mask<float, details::simd_abi::fixed_size<16>> : public details::Vec_basic_simd_mask<float, Vec16fb> { };
 
     /*
     template<class T, simd-size-type N = basic_simd_mask<sizeof(T)>::size()>
