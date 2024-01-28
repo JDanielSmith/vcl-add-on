@@ -102,6 +102,12 @@ namespace simd
     }
 
     // "... The specialization basic_simd_mask<T, Abi> is supported if ... Abi is simd_abi::fixed_size<N>, ..."
+    template<> class basic_simd_mask<std::int32_t, details::simd_abi::fixed_size<16>>
+    : public details::Vec_basic_simd_mask<std::int32_t, details::simd_abi::fixed_size<16>> {
+    public:
+    };
+
+    // "... The specialization basic_simd_mask<T, Abi> is supported if ... Abi is simd_abi::fixed_size<N>, ..."
     template<> class basic_simd_mask<float, details::simd_abi::fixed_size<16>> 
     : public details::Vec_basic_simd_mask<float, details::simd_abi::fixed_size<16>> {
     public:

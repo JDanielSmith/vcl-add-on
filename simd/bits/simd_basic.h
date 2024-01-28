@@ -68,6 +68,13 @@ namespace simd
 	}
 
 	// "... The specialization basic_simd<T, Abi> is supported if ... Abi is simd_abi::fixed_size<N>, ..."
+	template<> class basic_simd<std::int32_t, details::simd_abi::fixed_size<16>>
+	: public details::Vec_basic_simd<std::int32_t, details::simd_abi::fixed_size<16>> {
+	public:
+		static constexpr std::integral_constant<details::size_type, 16> size;
+	};
+
+	// "... The specialization basic_simd<T, Abi> is supported if ... Abi is simd_abi::fixed_size<N>, ..."
 	template<> class basic_simd<float, details::simd_abi::fixed_size<16>> 
 	: public details::Vec_basic_simd<float, details::simd_abi::fixed_size<16>> {
 	public:
