@@ -16,10 +16,10 @@ namespace simd
 
 		// "a signed integer type T so that sizeof(T) == Bytes."
 		template <size_t Bytes> struct integer_from_;
-		template<> struct integer_from_<8> { using type = std::int8_t; };
-		template<> struct integer_from_<16> { using type = std::int16_t; };
-		template<> struct integer_from_<32> { using type = std::int32_t; };
-		template<> struct integer_from_<64> { using type = std::int64_t; };
+		template<> struct integer_from_<1> { using type = std::int8_t; };
+		template<> struct integer_from_<2> { using type = std::int16_t; };
+		template<> struct integer_from_<4> { using type = std::int32_t; };
+		template<> struct integer_from_<8> { using type = std::int64_t; };
 		template <size_t Bytes>
 		using integer_from = typename integer_from_<Bytes>::type;
 	}
@@ -36,10 +36,16 @@ namespace simd
 	//inline constexpr simd_flags<see below> simd_flag_aligned{};
 
 	// [simd.class]
+	/*
+	template<class T, class Abi = native-abi<T>> class basic_simd;
+	*/
 	template<typename T, typename Abi> class basic_simd;
 
 	// [simd.mask]
-	//template<size_t Bytes, typename Abi> class basic_simd_mask;
+	/*
+	template<size_t Bytes, class Abi = native-abi<T>> class basic_simd_mask;
+	*/
+	//TODO: template<size_t Bytes, typename Abi> class basic_simd_mask; ???
 	template<typename T, typename Abi> class basic_simd_mask;
 
 	// [simd.creation]

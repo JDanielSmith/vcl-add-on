@@ -20,53 +20,6 @@ namespace VCL_NAMESPACE {
 
 namespace simd
 {
-    namespace details
-    {
-        // Vec_N_T<8, int32_t> == Vec8i
-        // https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
-        template <size_t elements_per_vector, typename T> struct Vec_N_T;
-
-        // Table 2.1 from https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
-        // 128 Total bits
-        template<> struct Vec_N_T<16, int8_t> final { using type = Vec16c; };
-        template<> struct Vec_N_T<16, uint8_t> final { using type = Vec16uc; };
-        template<> struct Vec_N_T<8, int16_t> final { using type = Vec8s; };
-        template<> struct Vec_N_T<8, uint16_t> final { using type = Vec8us; };
-        template<> struct Vec_N_T<4, int32_t> final { using type = Vec4i; };
-        template<> struct Vec_N_T<4, uint32_t> final { using type = Vec4ui; };
-        template<> struct Vec_N_T<2, int64_t> final { using type = Vec2q; };
-        template<> struct Vec_N_T<2, uint64_t> final { using type = Vec2uq; };
-        // 256 Total bits
-        template<> struct Vec_N_T<32, int8_t> final { using type = Vec32c; };
-        template<> struct Vec_N_T<32, uint8_t> final { using type = Vec32uc; };
-        template<> struct Vec_N_T<16, int16_t> final { using type = Vec16s; };
-        template<> struct Vec_N_T<16, uint16_t> final { using type = Vec16us; };
-        template<> struct Vec_N_T<8, int32_t> final { using type = Vec8i; };
-        template<> struct Vec_N_T<8, uint32_t> final { using type = Vec8ui; };
-        template<> struct Vec_N_T<4, int64_t> final { using type = Vec4q; };
-        template<> struct Vec_N_T<4, uint64_t> final { using type = Vec4uq; };
-        // 512 Total bits
-        template<> struct Vec_N_T<64, int8_t> final { using type = Vec64c; };
-        template<> struct Vec_N_T<64, uint8_t> final { using type = Vec64uc; };
-        template<> struct Vec_N_T<32, int16_t> final { using type = Vec32s; };
-        template<> struct Vec_N_T<32, uint16_t> final { using type = Vec32us; };
-        template<> struct Vec_N_T<16, int32_t> final { using type = Vec16i; };
-        template<> struct Vec_N_T<16, uint32_t> final { using type = Vec16ui; };
-        template<> struct Vec_N_T<8, int64_t> final { using type = Vec8q; };
-        template<> struct Vec_N_T<8, uint64_t> final { using type = Vec8uq; };
-
-        // Table 2.2 from https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
-        // 128 Total bits
-        template<> struct Vec_N_T<4, float> final { using type = Vec4f; };
-        template<> struct Vec_N_T<2, double> final { using type = Vec2d; };
-        // 256 Total bits
-        template<> struct Vec_N_T<8, float> final { using type = Vec8f; };
-        template<> struct Vec_N_T<4, double> final { using type = Vec4d; };
-        // 512 Total bits
-        template<> struct Vec_N_T<16, float> final { using type = Vec16f; };
-        template<> struct Vec_N_T<8, double> final { using type = Vec8d; };
-    }
-
 	namespace details
 	{
         #if MAX_VECTOR_SIZE >= 512
@@ -77,55 +30,18 @@ namespace simd
         constexpr size_type max_vector_size = 128;
         #endif
 
-		namespace simd_abi
-		{           
-            template<typename T, size_type N> struct Vec_tag {};
-            // See table 2.1 from https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
-            // See table 2.2 from https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
-            // 128 Total bits
-            template<> struct Vec_tag<int8_t, 128> { static constexpr size_type size = 16; using type = Vec16c; };
-            template<> struct Vec_tag<uint8_t, 128> { static constexpr size_type size = 16; using type = Vec16uc; };
-            template<> struct Vec_tag<int16_t, 128> { static constexpr size_type size = 8; using type = Vec8s; };
-            template<> struct Vec_tag<uint16_t, 128> { static constexpr size_type size = 8; using type = Vec8us; };
-            template<> struct Vec_tag<int32_t, 128> { static constexpr size_type size = 4; using type = Vec4i; };
-            template<> struct Vec_tag<uint32_t, 128> { static constexpr size_type size = 4; using type = Vec4ui; };
-            template<> struct Vec_tag<int64_t, 128> { static constexpr size_type size = 2; using type = Vec2q; };
-            template<> struct Vec_tag<uint64_t, 128> { static constexpr size_type size = 2; using type = Vec2uq; };
-            template<> struct Vec_tag<float, 128> { static constexpr size_type size = 4; using type = Vec4f; };
-            template<> struct Vec_tag<double, 128> { static constexpr size_type size = 2; using type = Vec2d; };
-            // 256 Total bits
-            template<> struct Vec_tag<int8_t, 256> { static constexpr size_type size = 32; using type = Vec32c; };
-            template<> struct Vec_tag<uint8_t, 256> { static constexpr size_type size = 32; using type = Vec32uc; };
-            template<> struct Vec_tag<int16_t, 256> { static constexpr size_type size = 16; using type = Vec16s; };
-            template<> struct Vec_tag<uint16_t, 256> { static constexpr size_type size = 16; using type = Vec16us; };
-            template<> struct Vec_tag<int32_t, 256> { static constexpr size_type size = 8; using type = Vec8i; };
-            template<> struct Vec_tag<uint32_t, 256> { static constexpr size_type size = 8; using type = Vec8ui; };
-            template<> struct Vec_tag<int64_t, 256> { static constexpr size_type size = 4; using type = Vec4q; };
-            template<> struct Vec_tag<uint64_t, 256> { static constexpr size_type size = 4; using type = Vec4uq; };
-            template<> struct Vec_tag<float, 256> { static constexpr size_type size = 8; using type = Vec8f; };
-            template<> struct Vec_tag<double, 256> { static constexpr size_type size = 4; using type = Vec4d; };
-            // 512 Total bits
-            template<> struct Vec_tag<int8_t, 512> { static constexpr size_type size = 64; using type = Vec64c; };
-            template<> struct Vec_tag<uint8_t, 512> { static constexpr size_type size = 64; using type = Vec64uc; };
-            template<> struct Vec_tag<int16_t, 512> { static constexpr size_type size = 32; using type = Vec32s; };
-            template<> struct Vec_tag<uint16_t, 512> { static constexpr size_type size = 32; using type = Vec32us; };
-            template<> struct Vec_tag<int32_t, 512> { static constexpr size_type size = 16; using type = Vec16i; };
-            template<> struct Vec_tag<uint32_t, 512> { static constexpr size_type size = 16; using type = Vec16ui; };
-            template<> struct Vec_tag<int64_t, 512> { static constexpr size_type size = 8; using type = Vec8q; };
-            template<> struct Vec_tag<uint64_t, 512> { static constexpr size_type size = 8; using type = Vec8uq; };
-            template<> struct Vec_tag<float, 512> { static constexpr size_type size = 16; using type = Vec16f; };
-            template<> struct Vec_tag<double, 512> { static constexpr size_type size = 8; using type = Vec8d; };
+        namespace simd_abi
+        {
+            template<size_type width> struct fixed_size_;
+            template<> struct fixed_size_<16> { };
+            template<size_type N> using fixed_size = fixed_size_<N>;
 
-            template<typename T, size_type N> using deduce_t = Vec_tag<T, N>;
+            template<typename T> using native_abi = fixed_size<16>;
 
-            template<typename T>
-            using native_abi = Vec_tag<T, max_vector_size>;
-
-			template<size_type N> struct fixed_size
-			{
-				static constexpr size_type size = N;
-			};
-		} // simd_abi
+            // "The implementation-defined maximum for N is no smaller than 64."
+            template<typename T, size_type N>
+            using deduce_t = fixed_size<N>;
+        }
 	}
 }
 
