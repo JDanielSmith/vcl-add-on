@@ -22,9 +22,9 @@ namespace VCL_NAMESPACE {
 namespace simd
 {
 	template<typename T, typename Abi>
-	inline basic_simd<T, Abi> atan2(basic_simd<T, Abi> y, basic_simd<T, Abi> x)
+	inline basic_simd<T, Abi> atan2(const basic_simd<T, Abi>& y, const basic_simd<T, Abi>& x)
 	{
-		using Vec_type = basic_simd<T, Abi>::Vec_type;
+		using Vec_type = basic_simd<T, Abi>;
 		return atan2(Vec_type(y), Vec_type(x));
 	}
 }
