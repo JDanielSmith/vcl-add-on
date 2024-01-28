@@ -80,22 +80,31 @@ namespace simd
         template<typename G> constexpr explicit basic_simd_mask(G&& gen, std::nullptr_t /*TODO: remove*/) noexcept;
 	};
 
+    namespace details
+    {
+        template<typename T, typename Abi>
+        class Vec_basic_simd_mask {
+        public:
+            using value_type = bool;
+            //using reference = see below;
+            using abi_type = Abi;
+
+            static constexpr auto size = basic_simd<details::integer_from<sizeof(T)>, Abi>::size; // TODO: basic_simd<details::integer_from<Bytes>, Abi>::size;
+
+            constexpr Vec_basic_simd_mask() noexcept = default;
+
+            // [simd.ctor]
+            template<typename U> constexpr Vec_basic_simd_mask(U&& value) noexcept {}
+            template<typename U, typename UAbi>
+            constexpr explicit Vec_basic_simd_mask(const basic_simd<U, UAbi>& other) noexcept;
+            template<typename G> constexpr explicit Vec_basic_simd_mask(G&& gen, std::nullptr_t /*TODO: remove*/) noexcept;
+        };
+    }
+
     // "... The specialization basic_simd_mask<T, Abi> is supported if ... Abi is simd_abi::fixed_size<N>, ..."
-    template<> class basic_simd_mask<float, details::simd_abi::fixed_size<16>> {
+    template<> class basic_simd_mask<float, details::simd_abi::fixed_size<16>> 
+    : public details::Vec_basic_simd_mask<float, details::simd_abi::fixed_size<16>> {
     public:
-        using value_type = float;
-        //using reference = see below;
-        using abi_type = details::simd_abi::fixed_size<16>;
-
-        static constexpr auto size = basic_simd<details::integer_from<sizeof(float)>, details::simd_abi::fixed_size<16>>::size; // TODO: basic_simd<details::integer_from<Bytes>, Abi>::size;
-
-        constexpr basic_simd_mask() noexcept = default;
-
-        // [simd.ctor]
-        template<typename U> constexpr basic_simd_mask(U&& value) noexcept {}
-        template<typename U, typename UAbi>
-        constexpr explicit basic_simd_mask(const basic_simd<U, UAbi>& other) noexcept;
-        template<typename G> constexpr explicit basic_simd_mask(G&& gen, std::nullptr_t /*TODO: remove*/) noexcept;
     };
 
     /*
