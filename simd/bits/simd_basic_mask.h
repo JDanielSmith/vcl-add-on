@@ -59,39 +59,51 @@ namespace simd
         template<> struct Vec_N_b<8, double> final { using type = Vec8db; };
     }
 
- //   // See comments in **simd_basic.h** about specializations.
- //   //
-	//// 	template<size_t Bytes, typename Abi = details::simd_abi::fixed_size<4>> class basic_simd_mask {
-	//template<typename T, typename Abi = details::simd_abi::fixed_size<4>> class basic_simd_mask {
-	//public:
-	//	using value_type = bool;
-	//	//using reference = see below;
-	//	using abi_type = Abi;
+    /*
+    template<size_t Bytes, class Abi = native-abi<T>> class basic_simd_mask;
+    */
+    // TODO: template<size_t Bytes, typename Abi = details::simd_abi::native_abi<T>> class basic_simd_mask { ???
+	template<typename T, typename Abi = details::simd_abi::native_abi<T>> class basic_simd_mask {
+	public:
+		using value_type = bool;
+		//using reference = see below;
+		using abi_type = Abi;
 
-	//	static constexpr auto size = basic_simd<T, Abi>::size; // TODO: basic_simd<details::integer_from<Bytes>, Abi>::size;
+        static constexpr auto size = basic_simd<details::integer_from<sizeof(T)>, Abi>::size;
 
-	//	constexpr basic_simd_mask() noexcept = default;
+		constexpr basic_simd_mask() noexcept = default;
 
- //       // [simd.mask.ctor]
- //       constexpr explicit basic_simd_mask(value_type v) noexcept : v_(v) {}
- //       template<typename U, class UAbi>// TODO: template<size_t UBytes, class UAbi>
- //       constexpr explicit basic_simd_mask(const basic_simd_mask<U, UAbi>& other) noexcept : v_(other.v_) {}
- //       template<typename G> constexpr explicit basic_simd_mask(G&& gen, std::nullptr_t /*TODO: remove*/) noexcept
- //       {
- //       }
+        // [simd.mask.ctor]
+        constexpr explicit basic_simd_mask(value_type v) noexcept;
+        template<typename U, class UAbi>// TODO: template<size_t UBytes, class UAbi>
+        constexpr explicit basic_simd_mask(const basic_simd_mask<U, UAbi>& other) noexcept;
+        template<typename G> constexpr explicit basic_simd_mask(G&& gen, std::nullptr_t /*TODO: remove*/) noexcept;
+	};
 
- //       using Vec_type = details::Vec_N_b<size, T>::type; // e.g., Vec4ib
- //   private:
- //       Vec_type v_;
- //   public:
- //       // "Implementations should enable explicit conversion from and to implementation-defined types.
- //       // This adds one or more of the following declarations to class `basic_simd`:"
- //       constexpr explicit operator Vec_type() const { return v_; }
- //       constexpr explicit basic_simd_mask(const Vec_type& init) : v_(init) { }
-	//};
+    // "... The specialization basic_simd_mask<T, Abi> is supported if ... Abi is simd_abi::fixed_size<N>, ..."
+    template<> class basic_simd_mask<float, details::simd_abi::fixed_size<16>> {
+    public:
+        using value_type = float;
+        //using reference = see below;
+        using abi_type = details::simd_abi::fixed_size<16>;
 
-	//template<typename T, details::size_type N = basic_simd_mask<T>::size>
-	//using simd_mask = basic_simd_mask<T, details::simd_abi::fixed_size<N>>; // TODO: sizeof(T)
+        static constexpr auto size = basic_simd<details::integer_from<sizeof(float)>, details::simd_abi::fixed_size<16>>::size; // TODO: basic_simd<details::integer_from<Bytes>, Abi>::size;
+
+        constexpr basic_simd_mask() noexcept = default;
+
+        // [simd.ctor]
+        template<typename U> constexpr basic_simd_mask(U&& value) noexcept {}
+        template<typename U, typename UAbi>
+        constexpr explicit basic_simd_mask(const basic_simd<U, UAbi>& other) noexcept;
+        template<typename G> constexpr explicit basic_simd_mask(G&& gen, std::nullptr_t /*TODO: remove*/) noexcept;
+    };
+
+    /*
+    template<class T, simd-size-type N = basic_simd_mask<sizeof(T)>::size()>
+    using simd_mask = basic_simd_mask<sizeof(T), deduce-t<T, N>>;
+    */
+	template<typename T, details::size_type N = basic_simd_mask<T>::size()>
+	using simd_mask = basic_simd_mask<T, details::simd_abi::deduce_t<T, N>>; // TODO: sizeof(T)
 }
 
 #ifdef VCL_NAMESPACE

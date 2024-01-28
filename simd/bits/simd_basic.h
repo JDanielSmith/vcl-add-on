@@ -24,16 +24,19 @@ namespace VCL_NAMESPACE {
 
 namespace simd
 {
+	/*
+	template<class T, class Abi = native-abi<T>> class basic_simd;
+	*/
 	template<typename T, typename Abi = details::simd_abi::native_abi<T>>
 	class basic_simd {
 	public:
 		using value_type = T;
 		//using reference = see below;
-		//using mask_type = basic_simd_mask<T, Abi>; // TODO: basic_simd_mask<sizeof(T), abi_type>;
+		using mask_type = basic_simd_mask<T, Abi>; // TODO: basic_simd_mask<sizeof(T), Abi>; ???
         using abi_type = Abi;
 
 		// "This member is present even if the particular basic_simd specialization is not supported."
-		static constexpr std::integral_constant<details::size_type, 16> size;
+		static constexpr std::integral_constant<details::size_type, -1> size;
 		 
 		constexpr basic_simd() noexcept = default;
 
@@ -49,7 +52,7 @@ namespace simd
 	public:
 		using value_type = float;
 		//using reference = see below;
-		//using mask_type = basic_simd_mask<T, Abi>; // TODO: basic_simd_mask<sizeof(T), abi_type>;
+		using mask_type = basic_simd_mask<float, details::simd_abi::fixed_size<16>>; // TODO: basic_simd_mask<sizeof(float), details::simd_abi::fixed_size<16>>; ???
 		using abi_type = details::simd_abi::fixed_size<16>;
 
 		static constexpr std::integral_constant<details::size_type, 16> size;
@@ -63,6 +66,10 @@ namespace simd
 		template<typename G> constexpr explicit basic_simd(G&& gen, std::nullptr_t /*TODO: remove*/) noexcept;
 	};
 
+	/*
+	template<class T, simd-size-type N = basic_simd<T>::size()>
+	using simd = basic_simd<T, deduce-t<T, N>>;
+	*/
 	template<typename T, details::size_type N = basic_simd<T>::size()>
 	using simd = basic_simd<T, details::simd_abi::deduce_t<T, N>>;
 }
