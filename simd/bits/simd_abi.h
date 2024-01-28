@@ -30,6 +30,26 @@ namespace simd
         constexpr size_type max_vector_size = 128;
         #endif
 
+        template<size_type N, typename T> struct Vec_N_T;
+        template<> struct Vec_N_T<16, int32_t> { using type = Vec16i; };
+        template<> struct Vec_N_T<16, float> { using type = Vec16f; };
+        template<size_type N, typename T>
+        using Vec = Vec_N_T<N, T>::type;
+
+        template<size_type N, typename T> struct Vec_N_b;
+        template<> struct Vec_N_b<16, int32_t> { using type = Vec16ib; };
+        template<> struct Vec_N_b<16, float> { using type = Vec16fb; };
+        template<size_type N, typename T>
+        using VecNb = Vec_N_b<N, T>::type;
+
+        template<typename T> struct Vec_type_;
+        template<> struct Vec_type_<Vec16i> { using type = int32_t; };
+        template<> struct Vec_type_<Vec16f> { using type = float; };
+        template<> struct Vec_type_<Vec16ib> { using type = int32_t; };
+        template<> struct Vec_type_<Vec16fb> { using type = float; };
+        template<typename T>
+        using Vec_type = Vec_type_<T>::type;
+
         namespace simd_abi
         {
             template<size_type width> struct fixed_size_;

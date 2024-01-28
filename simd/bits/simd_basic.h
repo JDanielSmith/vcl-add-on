@@ -49,13 +49,13 @@ namespace simd
 
 	namespace details
 	{
-		template<typename T, typename Vec>
+		template<typename Vec>
 		class Vec_basic_simd {
 		public:
-			using value_type = T;
+			using value_type = Vec_type<Vec>;
 			//using reference = see below;
 			using abi_type = details::simd_abi::fixed_size<Vec::size()>;
-			using mask_type = basic_simd_mask<T, abi_type>; // TODO: basic_simd_mask<sizeof(T), Abi>; ???
+			using mask_type = basic_simd_mask<value_type, abi_type>; // TODO: basic_simd_mask<sizeof(T), Abi>; ???
 
 			static constexpr std::integral_constant<details::size_type, Vec::size()> size;
 
@@ -63,8 +63,8 @@ namespace simd
 
 			// [simd.ctor]
 			template<typename U> constexpr Vec_basic_simd(U&& value) noexcept : v_(value) {}
-			template<typename U, typename UVec>
-			constexpr explicit Vec_basic_simd(const Vec_basic_simd<U, UVec>& other) noexcept : v_(other.v_) {}
+			template<typename UVec>
+			constexpr explicit Vec_basic_simd(const Vec_basic_simd<UVec>& other) noexcept : v_(other.v_) {}
 			template<typename G> constexpr explicit Vec_basic_simd(G&& gen, std::nullptr_t /*TODO: remove*/) noexcept;
 
 			// "Implementations should enable explicit conversion from and to implementation-defined types."
@@ -74,12 +74,12 @@ namespace simd
 		};
 	}
 
-	#define VECTORCLASS_basic_simd(type_, Vec_) \
-	template<> class basic_simd<type_, details::simd_abi::fixed_size<Vec_::size()>> : public details::Vec_basic_simd<type_, Vec_> { }
+	#define VECTORCLASS_basic_simd(type_, size_) \
+	template<> class basic_simd<type_, details::simd_abi::fixed_size<size_>> : public details::Vec_basic_simd<details::Vec<size_, type_>> { }
 
 	// "... The specialization basic_simd<T, Abi> is supported if ... Abi is simd_abi::fixed_size<N>, ..."
-	VECTORCLASS_basic_simd(std::int32_t, Vec16i);
-	VECTORCLASS_basic_simd(float, Vec16f);
+	VECTORCLASS_basic_simd(std::int32_t, 16);
+	VECTORCLASS_basic_simd(float, 16);
 
 	/*
 	template<class T, simd-size-type N = basic_simd<T>::size()>
