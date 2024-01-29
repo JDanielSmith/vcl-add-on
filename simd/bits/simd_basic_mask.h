@@ -46,20 +46,18 @@ namespace simd
 
 	namespace details
 	{
-		template<typename Vec_b>
+		template<typename Vec>
 		class Vec_basic_simd_mask {
+			using T = Vec_value_type<Vec::elementtype()>;
 		public:
-			using Vec_t = Vec_b;
+			static constexpr auto Bytes = sizeof(T);
+			using Vec_t = for_use_with<Vec>; // e.g, Vec_t=Vec16fb for Vec=Vec16f
 			using value_type = bool;
 			//using reference = see below;
 			using abi_type = details::simd_abi::fixed_size<Vec_t::size()>;
 
-			//static constexpr auto size = basic_simd<details::integer_from<sizeof(T)>, Abi>::size;  // TODO: basic_simd<details::integer_from<Bytes>, Abi>::size;
-			static constexpr auto size = Vec_t::size();
-		//private:
-		//	static constexpr auto Bytes = size;
-		//	static_assert(size == basic_simd<details::integer_from<Bytes>, abi_type>::size());
-		//public:
+			static constexpr auto size = basic_simd<details::integer_from<Bytes>, abi_type>::size;
+			static_assert(Vec_t::size() == basic_simd<details::integer_from<Bytes>, abi_type>::size());
 
 			constexpr Vec_basic_simd_mask() noexcept = default;
 
@@ -73,17 +71,48 @@ namespace simd
 			constexpr explicit operator Vec_t() const { return v_; }
 			constexpr explicit Vec_basic_simd_mask(const Vec_t& init) : v_(init) {}
 		private:
-			Vec_b v_;
+			Vec_t v_;
 		};
 	}
 
 	#define VECTORCLASS_basic_simd_mask(type_, size_) \
 	template<> class basic_simd_mask<type_, details::simd_abi::fixed_size<size_>> \
-		: public details::Vec_basic_simd_mask<details::VecNb<size_, type_>> { }
+		: public details::Vec_basic_simd_mask<details::Vec<size_, type_>> { }
 
 	// "... The specialization basic_simd_mask<T, Abi> is supported if ... Abi is simd_abi::fixed_size<N>, ..."
-	VECTORCLASS_basic_simd_mask(std::int32_t, 16);
+	// 128 Total bits
+	VECTORCLASS_basic_simd_mask(int8_t, 16);
+	VECTORCLASS_basic_simd_mask(uint8_t, 16);
+	VECTORCLASS_basic_simd_mask(int16_t, 8);
+	VECTORCLASS_basic_simd_mask(uint16_t, 8);
+	VECTORCLASS_basic_simd_mask(int32_t, 4);
+	VECTORCLASS_basic_simd_mask(uint32_t, 4);
+	VECTORCLASS_basic_simd_mask(int64_t, 2);
+	VECTORCLASS_basic_simd_mask(uint64_t, 2);
+	VECTORCLASS_basic_simd_mask(float, 4);
+	VECTORCLASS_basic_simd_mask(double, 2);
+	// 256 Total bits
+	VECTORCLASS_basic_simd_mask(int8_t, 32);
+	VECTORCLASS_basic_simd_mask(uint8_t, 32);
+	VECTORCLASS_basic_simd_mask(int16_t, 16);
+	VECTORCLASS_basic_simd_mask(uint16_t, 16);
+	VECTORCLASS_basic_simd_mask(int32_t, 8);
+	VECTORCLASS_basic_simd_mask(uint32_t, 8);
+	VECTORCLASS_basic_simd_mask(int64_t, 4);
+	VECTORCLASS_basic_simd_mask(uint64_t, 4);
+	VECTORCLASS_basic_simd_mask(float, 8);
+	VECTORCLASS_basic_simd_mask(double, 4);
+	// 512 Total bits
+	VECTORCLASS_basic_simd_mask(int8_t, 64);
+	VECTORCLASS_basic_simd_mask(uint8_t, 64);
+	VECTORCLASS_basic_simd_mask(int16_t, 32);
+	VECTORCLASS_basic_simd_mask(uint16_t, 32);
+	VECTORCLASS_basic_simd_mask(int32_t, 16);
+	VECTORCLASS_basic_simd_mask(uint32_t, 16);
+	VECTORCLASS_basic_simd_mask(int64_t, 8);
+	VECTORCLASS_basic_simd_mask(uint64_t, 8);
 	VECTORCLASS_basic_simd_mask(float, 16);
+	VECTORCLASS_basic_simd_mask(double, 8);
 
 	#undef VECTORCLASS_basic_simd_mask
 

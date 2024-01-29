@@ -80,8 +80,39 @@ namespace simd
 	template<> class basic_simd<type_, details::simd_abi::fixed_size<size_>> : public details::Vec_basic_simd<details::Vec<size_, type_>> { }
 
 	// "... The specialization basic_simd<T, Abi> is supported if ... Abi is simd_abi::fixed_size<N>, ..."
-	VECTORCLASS_basic_simd(std::int32_t, 16);
+	// 128 Total bits
+	VECTORCLASS_basic_simd(int8_t, 16);
+	VECTORCLASS_basic_simd(uint8_t, 16);
+	VECTORCLASS_basic_simd(int16_t, 8);
+	VECTORCLASS_basic_simd(uint16_t, 8);
+	VECTORCLASS_basic_simd(int32_t, 4);
+	VECTORCLASS_basic_simd(uint32_t, 4);
+	VECTORCLASS_basic_simd(int64_t, 2);
+	VECTORCLASS_basic_simd(uint64_t, 2);
+	VECTORCLASS_basic_simd(float, 4);
+	VECTORCLASS_basic_simd(double, 2);
+	// 256 Total bits
+	VECTORCLASS_basic_simd(int8_t, 32);
+	VECTORCLASS_basic_simd(uint8_t, 32);
+	VECTORCLASS_basic_simd(int16_t, 16);
+	VECTORCLASS_basic_simd(uint16_t, 16);
+	VECTORCLASS_basic_simd(int32_t, 8);
+	VECTORCLASS_basic_simd(uint32_t, 8);
+	VECTORCLASS_basic_simd(int64_t, 4);
+	VECTORCLASS_basic_simd(uint64_t, 4);
+	VECTORCLASS_basic_simd(float, 8);
+	VECTORCLASS_basic_simd(double, 4);
+	// 512 Total bits
+	VECTORCLASS_basic_simd(int8_t, 64);
+	VECTORCLASS_basic_simd(uint8_t, 64);
+	VECTORCLASS_basic_simd(int16_t, 32);
+	VECTORCLASS_basic_simd(uint16_t, 32);
+	VECTORCLASS_basic_simd(int32_t, 16);
+	VECTORCLASS_basic_simd(uint32_t, 16);
+	VECTORCLASS_basic_simd(int64_t, 8);
+	VECTORCLASS_basic_simd(uint64_t, 8);
 	VECTORCLASS_basic_simd(float, 16);
+	VECTORCLASS_basic_simd(double, 8);
 
 	#undef VECTORCLASS_basic_simd
 
