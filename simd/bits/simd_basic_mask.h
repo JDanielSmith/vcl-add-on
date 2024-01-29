@@ -56,13 +56,13 @@ namespace simd
 			using T = Vec_value_type<Vec::elementtype()>; // e.g., `int32_t`
 		public:
 			static constexpr auto Bytes = sizeof(T); // sizeof(int32_t) == sizeof(uint32_t)
-			using Vec_t = for_use_with<Vec>; // e.g, Vec_t=Vec16ib for Vec=Vec16i
+			using Vec_type = for_use_with<Vec>; // e.g, Vec_type=Vec16ib for Vec=Vec16i
 			using value_type = bool;
 			//using reference = see below;
-			using abi_type = details::simd_abi::fixed_size<Vec_t::size()>;
+			using abi_type = details::simd_abi::fixed_size<Vec_type::size()>;
 
 			static constexpr auto size = basic_simd<details::integer_from<Bytes>, abi_type>::size;
-			static_assert(Vec_t::size() == basic_simd<details::integer_from<Bytes>, abi_type>::size());
+			static_assert(Vec_type::size() == basic_simd<details::integer_from<Bytes>, abi_type>::size());
 
 			constexpr Vec_basic_simd_mask() noexcept = default;
 
@@ -73,10 +73,10 @@ namespace simd
 			template<typename G> constexpr explicit Vec_basic_simd_mask(G&& gen, std::nullptr_t /*TODO: remove*/) noexcept;
 
 			// "Implementations should enable explicit conversion from and to implementation-defined types."
-			constexpr explicit operator Vec_t() const { return v_; }
-			constexpr explicit Vec_basic_simd_mask(const Vec_t& init) : v_(init) {}
+			constexpr explicit operator Vec_type() const { return v_; }
+			constexpr explicit Vec_basic_simd_mask(const Vec_type& init) : v_(init) {}
 		private:
-			Vec_t v_;
+			Vec_type v_;
 		};
 	}
 

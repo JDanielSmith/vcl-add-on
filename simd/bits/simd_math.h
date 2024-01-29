@@ -24,8 +24,8 @@ namespace simd
 	template<typename T, typename Abi>
 	inline auto atan2(const basic_simd<T, Abi>& y, const basic_simd<T, Abi>& x)
 	{
-		using Vec_t = basic_simd<T, Abi>::Vec_t;
-		return basic_simd<T, Abi>(atan2(static_cast<Vec_t>(y), static_cast<Vec_t>(x)));
+		using Vec_type = basic_simd<T, Abi>::Vec_type;
+		return basic_simd<T, Abi>(atan2(static_cast<Vec_type>(y), static_cast<Vec_type>(x)));
 	}
 }
 

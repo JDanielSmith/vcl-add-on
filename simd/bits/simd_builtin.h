@@ -31,12 +31,12 @@ namespace simd
 
 	#define VECTORCLASS_basic_simd_comparison(OPERATOR_) \
 		template<typename T, typename Abi> constexpr auto operator OPERATOR_(const basic_simd<T, Abi>& lhs, const basic_simd<T, Abi>& rhs) noexcept { \
-			using Vec_t = basic_simd<T, Abi>::Vec_t; \
-			auto result = static_cast<Vec_t>(lhs) OPERATOR_ rhs; \
+			using Vec_type = basic_simd<T, Abi>::Vec_type; \
+			auto result = static_cast<Vec_type>(lhs) OPERATOR_ rhs; \
 			return basic_simd<T, Abi>::mask_type(result); } \
 		template<typename T, typename Abi, typename U> constexpr auto operator OPERATOR_(const basic_simd<T, Abi>& lhs, const U& rhs) noexcept { \
-			using Vec_t = basic_simd<T, Abi>::Vec_t; \
-			auto result = static_cast<Vec_t>(lhs) OPERATOR_ rhs; \
+			using Vec_type = basic_simd<T, Abi>::Vec_type; \
+			auto result = static_cast<Vec_type>(lhs) OPERATOR_ rhs; \
 			return basic_simd<T, Abi>::mask_type(result); }
 	VECTORCLASS_basic_simd_comparison(==);
 	VECTORCLASS_basic_simd_comparison(!=);
@@ -49,10 +49,10 @@ namespace simd
 	template<typename TMask, typename Abi, typename T, typename U>
 	constexpr auto simd_select(const basic_simd_mask<TMask, Abi>& c, const T& a, const U& b)
 	{
-		using Vec_t_b = basic_simd_mask<TMask, Abi>::Vec_t;
-		using Vec_t = T::Vec_t;
-		using Vec_u = U::Vec_t;
-		auto result = select(static_cast<Vec_t_b>(c), static_cast<Vec_t>(a), static_cast<Vec_u>(b));
+		using Vec_t_b = basic_simd_mask<TMask, Abi>::Vec_type;
+		using Vec_type = T::Vec_type;
+		using Vec_u = U::Vec_type;
+		auto result = select(static_cast<Vec_t_b>(c), static_cast<Vec_type>(a), static_cast<Vec_u>(b));
 		return T(result);
 	}
 }

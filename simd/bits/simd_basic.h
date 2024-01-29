@@ -88,10 +88,10 @@ namespace simd
 		template<typename Vec>
 		class Vec_basic_simd {
 		public:
-			using Vec_t = Vec;
-			using value_type = Vec_value_type<Vec_t::elementtype()>;
+			using Vec_type = Vec;
+			using value_type = Vec_value_type<Vec_type::elementtype()>;
 			//using reference = see below;
-			using abi_type = details::simd_abi::fixed_size<Vec_t::size()>;
+			using abi_type = details::simd_abi::fixed_size<Vec_type::size()>;
 			using mask_type = basic_simd_mask<value_type, abi_type>; // TODO: basic_simd_mask<sizeof(T), Abi>; ???
 
 			static constexpr std::integral_constant<details::size_type, Vec::size()> size;
@@ -105,11 +105,11 @@ namespace simd
 			template<typename G> constexpr explicit Vec_basic_simd(G&& gen, std::nullptr_t /*TODO: remove*/) noexcept;
 
 			// "Implementations should enable explicit conversion from and to implementation-defined types."
-			constexpr explicit operator Vec_t() const { return v_; }
-			constexpr explicit Vec_basic_simd(const Vec_t& init) : v_(init) {}
+			constexpr explicit operator Vec_type() const { return v_; }
+			constexpr explicit Vec_basic_simd(const Vec_type& init) : v_(init) {}
 
 		private:
-			Vec_t v_;
+			Vec_type v_;
 		};
 	}
 
