@@ -28,11 +28,86 @@ namespace simd
 		++(this->v_);
 		return *this;
 	}
+	template<typename T, typename Abi>
+	constexpr basic_simd<T, Abi> basic_simd<T, Abi>::operator++(int) noexcept
+	{
+		auto old = *this; // copy old value
+		operator++();  // prefix increment
+		return old;    // return old value
+	}
+	template<typename T, typename Abi>
+	constexpr basic_simd<T, Abi>& basic_simd<T, Abi>::operator--() noexcept
+	{
+		--(this->v_);
+		return *this;
+	}
+	template<typename T, typename Abi>
+	constexpr basic_simd<T, Abi> basic_simd<T, Abi>::operator--(int) noexcept
+	{
+		auto old = *this; // copy old value
+		operator--();  // prefix decrement
+		return old;    // return old value
+	}
+	template<typename T, typename Abi>
+	constexpr basic_simd<T, Abi>::mask_type basic_simd<T, Abi>::operator!() const noexcept
+	{
+		return !(this->v_);
+	}
+	template<typename T, typename Abi>
+	constexpr basic_simd<T, Abi> basic_simd<T, Abi>::operator~() const noexcept
+	{
+		return ~(this->v_);
+	}
+	template<typename T, typename Abi>
+	constexpr basic_simd<T, Abi> basic_simd<T, Abi>::operator+() const noexcept
+	{
+		return +(this->v_);
+	}
+	template<typename T, typename Abi>
+	constexpr basic_simd<T, Abi> basic_simd<T, Abi>::operator-() const noexcept
+	{
+		return -(this->v_);
+	}
+
+	#define VECTORCLASS_basic_simd_binary(OPERATOR_) \
+		template<typename T, typename Abi> constexpr auto operator OPERATOR_(const basic_simd<T, Abi>& lhs, const basic_simd<T, Abi>& rhs) noexcept { \
+			using Vec_type = basic_simd<T, Abi>::Vec_type; \
+			auto result = static_cast<Vec_type>(lhs) OPERATOR_ static_cast<Vec_type>(rhs); \
+			return basic_simd<T, Abi>(result); } \
+		template<typename T, typename Abi, typename U> constexpr auto operator OPERATOR_(const basic_simd<T, Abi>& lhs, const U& rhs) noexcept { \
+			using Vec_type = basic_simd<T, Abi>::Vec_type; \
+			auto result = static_cast<Vec_type>(lhs) OPERATOR_ rhs; \
+			return basic_simd<T, Abi>(result); }
+	VECTORCLASS_basic_simd_binary(+);
+	VECTORCLASS_basic_simd_binary(-);
+	VECTORCLASS_basic_simd_binary(*);
+	VECTORCLASS_basic_simd_binary(/);
+	VECTORCLASS_basic_simd_binary(%);
+	VECTORCLASS_basic_simd_binary(&);
+	VECTORCLASS_basic_simd_binary(|);
+	VECTORCLASS_basic_simd_binary(^);
+	VECTORCLASS_basic_simd_binary(<<);
+	VECTORCLASS_basic_simd_binary(>>);
+	template<typename T, typename Abi>
+	constexpr auto operator<<(const basic_simd<T, Abi>& lhs, details::size_type rhs) noexcept
+	{
+		using Vec_type = basic_simd<T, Abi>::Vec_type;
+		auto result = static_cast<Vec_type>(lhs) << rhs;
+		return basic_simd<T, Abi>(result);
+	}
+	template<typename T, typename Abi>
+	constexpr auto operator>>(const basic_simd<T, Abi>& lhs, details::size_type rhs) noexcept
+	{
+		using Vec_type = basic_simd<T, Abi>::Vec_type;
+		auto result = static_cast<Vec_type>(lhs) >> rhs;
+		return basic_simd<T, Abi>(result);
+	}
+	#undef VECTORCLASS_basic_simd_binary
 
 	#define VECTORCLASS_basic_simd_comparison(OPERATOR_) \
 		template<typename T, typename Abi> constexpr auto operator OPERATOR_(const basic_simd<T, Abi>& lhs, const basic_simd<T, Abi>& rhs) noexcept { \
 			using Vec_type = basic_simd<T, Abi>::Vec_type; \
-			auto result = static_cast<Vec_type>(lhs) OPERATOR_ rhs; \
+			auto result = static_cast<Vec_type>(lhs) OPERATOR_ static_cast<Vec_type>(rhs); \
 			return basic_simd<T, Abi>::mask_type(result); } \
 		template<typename T, typename Abi, typename U> constexpr auto operator OPERATOR_(const basic_simd<T, Abi>& lhs, const U& rhs) noexcept { \
 			using Vec_type = basic_simd<T, Abi>::Vec_type; \

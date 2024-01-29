@@ -46,6 +46,10 @@ namespace simd
 		constexpr explicit basic_simd(const basic_simd<U, UAbi>& other) noexcept;
 		template<typename G> constexpr explicit basic_simd(G&& gen, std::nullptr_t /*TODO: remove*/) noexcept;
 
+		// [simd.subscr]
+		constexpr auto& operator[](details::size_type)&;
+		constexpr value_type operator[](details::size_type) const&;
+
 		// [simd.unary]
 		constexpr basic_simd& operator++() noexcept;
 		constexpr basic_simd operator++(int) noexcept;
@@ -107,6 +111,12 @@ namespace simd
 			// "Implementations should enable explicit conversion from and to implementation-defined types."
 			constexpr explicit operator Vec_type() const { return v_; }
 			constexpr explicit Vec_basic_simd(const Vec_type& init) : v_(init) {}
+
+			// [simd.subscr]
+			// Section 2.5 of https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
+			// "Note that you can read a vector element with the[] operator, but not write an element."
+			constexpr auto& operator[](details::size_type) & = delete; 
+			constexpr value_type operator[](details::size_type i) const& { return v_[i]; }
 
 		private:
 			Vec_type v_;

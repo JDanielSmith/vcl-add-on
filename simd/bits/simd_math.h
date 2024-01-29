@@ -22,6 +22,13 @@ namespace VCL_NAMESPACE {
 namespace simd
 {
 	template<typename T, typename Abi>
+	inline auto round(const basic_simd<T, Abi>& v)
+	{
+		using Vec_type = basic_simd<T, Abi>::Vec_type;
+		return basic_simd<T, Abi>(round(static_cast<Vec_type>(v)));
+	}
+
+	template<typename T, typename Abi>
 	inline auto atan2(const basic_simd<T, Abi>& y, const basic_simd<T, Abi>& x)
 	{
 		using Vec_type = basic_simd<T, Abi>::Vec_type;
