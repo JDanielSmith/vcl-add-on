@@ -46,6 +46,30 @@ namespace simd
 		constexpr explicit basic_simd(const basic_simd<U, UAbi>& other) noexcept;
 		template<typename G> constexpr explicit basic_simd(G&& gen, std::nullptr_t /*TODO: remove*/) noexcept;
 
+		// [simd.unary]
+		constexpr basic_simd& operator++() noexcept;
+		constexpr basic_simd operator++(int) noexcept;
+		constexpr basic_simd& operator--() noexcept;
+		constexpr basic_simd operator--(int) noexcept;
+		constexpr mask_type operator!() const noexcept;
+		constexpr basic_simd operator~() const noexcept;
+		constexpr basic_simd operator+() const noexcept;
+		constexpr basic_simd operator-() const noexcept;
+
+		// [simd.binary]
+		friend constexpr basic_simd operator+(const basic_simd&, const basic_simd&) noexcept;
+		friend constexpr basic_simd operator-(const basic_simd&, const basic_simd&) noexcept;
+		friend constexpr basic_simd operator*(const basic_simd&, const basic_simd&) noexcept;
+		friend constexpr basic_simd operator/(const basic_simd&, const basic_simd&) noexcept;
+		friend constexpr basic_simd operator%(const basic_simd&, const basic_simd&) noexcept;
+		friend constexpr basic_simd operator&(const basic_simd&, const basic_simd&) noexcept;
+		friend constexpr basic_simd operator|(const basic_simd&, const basic_simd&) noexcept;
+		friend constexpr basic_simd operator^(const basic_simd&, const basic_simd&) noexcept;
+		friend constexpr basic_simd operator<<(const basic_simd&, const basic_simd&) noexcept;
+		friend constexpr basic_simd operator>>(const basic_simd&, const basic_simd&) noexcept;
+		friend constexpr basic_simd operator<<(const basic_simd&, details::size_type) noexcept;
+		friend constexpr basic_simd operator>>(const basic_simd&, details::size_type) noexcept;
+
 		// [simd.comparison]
 		friend constexpr mask_type operator==(const basic_simd&, const basic_simd&) noexcept;
 		friend constexpr mask_type operator!=(const basic_simd&, const basic_simd&) noexcept;

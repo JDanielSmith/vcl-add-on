@@ -14,6 +14,7 @@
 #endif
 
 #include "simd_basic.h"
+#include "simd_basic_mask.h"
 
 #ifdef VCL_NAMESPACE
 namespace VCL_NAMESPACE {
@@ -21,22 +22,39 @@ namespace VCL_NAMESPACE {
 
 namespace simd
 {
-	#define VECTORCLASS_basic_simd_relop(OPERATOR_) \
+	template<typename T, typename Abi>
+	constexpr basic_simd<T, Abi>& basic_simd<T, Abi>::operator++() noexcept
+	{
+		++(this->v_);
+		return *this;
+	}
+
+	#define VECTORCLASS_basic_simd_comparison(OPERATOR_) \
 		template<typename T, typename Abi> constexpr auto operator OPERATOR_(const basic_simd<T, Abi>& lhs, const basic_simd<T, Abi>& rhs) noexcept { \
 			using Vec_t = basic_simd<T, Abi>::Vec_t; \
-			const auto result = static_cast<Vec_t>(lhs) OPERATOR_ rhs; \
+			auto result = static_cast<Vec_t>(lhs) OPERATOR_ rhs; \
 			return basic_simd<T, Abi>::mask_type(result); } \
 		template<typename T, typename Abi, typename U> constexpr auto operator OPERATOR_(const basic_simd<T, Abi>& lhs, const U& rhs) noexcept { \
 			using Vec_t = basic_simd<T, Abi>::Vec_t; \
-			const auto result = static_cast<Vec_t>(lhs) OPERATOR_ rhs; \
+			auto result = static_cast<Vec_t>(lhs) OPERATOR_ rhs; \
 			return basic_simd<T, Abi>::mask_type(result); }
-	VECTORCLASS_basic_simd_relop(==);
-	VECTORCLASS_basic_simd_relop(!=);
-	VECTORCLASS_basic_simd_relop(>=);
-	VECTORCLASS_basic_simd_relop(<=);
-	VECTORCLASS_basic_simd_relop(>);
-	VECTORCLASS_basic_simd_relop(<);
-	#undef VECTORCLASS_basic_simd_relop
+	VECTORCLASS_basic_simd_comparison(==);
+	VECTORCLASS_basic_simd_comparison(!=);
+	VECTORCLASS_basic_simd_comparison(>=);
+	VECTORCLASS_basic_simd_comparison(<=);
+	VECTORCLASS_basic_simd_comparison(>);
+	VECTORCLASS_basic_simd_comparison(<);
+	#undef VECTORCLASS_basic_simd_comparison
+
+	template<typename TMask, typename Abi, typename T, typename U>
+	constexpr auto simd_select(const basic_simd_mask<TMask, Abi>& c, const T& a, const U& b)
+	{
+		using Vec_t_b = basic_simd_mask<TMask, Abi>::Vec_t;
+		using Vec_t = T::Vec_t;
+		using Vec_u = U::Vec_t;
+		auto result = select(static_cast<Vec_t_b>(c), static_cast<Vec_t>(a), static_cast<Vec_u>(b));
+		return T(result);
+	}
 }
 
 #ifdef VCL_NAMESPACE

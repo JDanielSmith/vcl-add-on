@@ -52,6 +52,9 @@ namespace simd
 	// [simd.mask.reductions]
 	// [simd.reductions]
 	// [simd.alg]
+	template<typename TMask, typename Abi, typename T, typename U>
+	constexpr auto simd_select(const basic_simd_mask<TMask, Abi>& c, const T& a, const U& b)
+		noexcept -> decltype(simd_select_impl(c, a, b));
 }
 
 #ifdef VCL_NAMESPACE
