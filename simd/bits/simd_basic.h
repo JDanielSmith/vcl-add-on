@@ -49,6 +49,10 @@ namespace simd
 
 	namespace details
 	{
+		// The proposal calls for explicit specializations of `basic_simd`; that's because
+		// normal implementations will need code specific to each specialization.
+		// Since this is built on VCL, that work has already been done, it's
+		// just called `Vec4i` instead of `basic_simd<int, 4>`.
 		template<typename Vec>
 		class Vec_basic_simd {
 		public:

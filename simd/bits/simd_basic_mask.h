@@ -46,12 +46,17 @@ namespace simd
 
 	namespace details
 	{
-		template<typename Vec>
+		// The vector class library has a specific mask type for each Vec type; e.g.,
+		// `Vec16ib` "for use with" `Vec16i` and `Vec16ui`.  To implement that, 
+		// the basic_simd_mask<> template is changed from `size_t Bytes`
+		// to `typename T`; that keeps the type around long enough to
+		// pick the right Vec mask for the given Vec.
+		template<typename Vec> // this is e.g., `Vec16i`, **not** `Vec16ib`
 		class Vec_basic_simd_mask {
-			using T = Vec_value_type<Vec::elementtype()>;
+			using T = Vec_value_type<Vec::elementtype()>; // e.g., `int32_t`
 		public:
-			static constexpr auto Bytes = sizeof(T);
-			using Vec_t = for_use_with<Vec>; // e.g, Vec_t=Vec16fb for Vec=Vec16f
+			static constexpr auto Bytes = sizeof(T); // sizeof(int32_t) == sizeof(uint32_t)
+			using Vec_t = for_use_with<Vec>; // e.g, Vec_t=Vec16ib for Vec=Vec16i
 			using value_type = bool;
 			//using reference = see below;
 			using abi_type = details::simd_abi::fixed_size<Vec_t::size()>;
