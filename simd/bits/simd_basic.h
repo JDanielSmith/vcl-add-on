@@ -45,6 +45,14 @@ namespace simd
 		template<typename U, typename UAbi>
 		constexpr explicit basic_simd(const basic_simd<U, UAbi>& other) noexcept;
 		template<typename G> constexpr explicit basic_simd(G&& gen, std::nullptr_t /*TODO: remove*/) noexcept;
+
+		// [simd.comparison]
+		friend constexpr mask_type operator==(const basic_simd&, const basic_simd&) noexcept;
+		friend constexpr mask_type operator!=(const basic_simd&, const basic_simd&) noexcept;
+		friend constexpr mask_type operator>=(const basic_simd&, const basic_simd&) noexcept;
+		friend constexpr mask_type operator<=(const basic_simd&, const basic_simd&) noexcept;
+		friend constexpr mask_type operator>(const basic_simd&, const basic_simd&) noexcept;
+		friend constexpr mask_type operator<(const basic_simd&, const basic_simd&) noexcept;
 	};
 
 	namespace details
@@ -75,6 +83,7 @@ namespace simd
 			// "Implementations should enable explicit conversion from and to implementation-defined types."
 			constexpr explicit operator Vec_t() const { return v_; }
 			constexpr explicit Vec_basic_simd(const Vec_t& init) : v_(init) {}
+
 		private:
 			Vec_t v_;
 		};

@@ -25,7 +25,7 @@ namespace simd
 	inline auto atan2(const basic_simd<T, Abi>& y, const basic_simd<T, Abi>& x)
 	{
 		using Vec_t = basic_simd<T, Abi>::Vec_t;
-		return basic_simd<T, Abi>(atan2(Vec_t(y), Vec_t(x)));
+		return basic_simd<T, Abi>(atan2(static_cast<Vec_t>(y), static_cast<Vec_t>(x)));
 	}
 }
 
