@@ -14,6 +14,7 @@
 #endif
 
 #include "simd_basic.h"
+#include "simd_traits.h"
 
 #ifdef VCL_NAMESPACE
 namespace VCL_NAMESPACE {
@@ -26,6 +27,18 @@ namespace simd
 	{
 		using Vec_type = basic_simd<T, Abi>::Vec_type;
 		return basic_simd<T, Abi>(round(static_cast<Vec_type>(v)));
+	}
+
+	template<typename T, typename Abi>
+	inline auto lround(const basic_simd<T, Abi>& v)
+	{
+		using simd_type = basic_simd<T, Abi>;
+		using Vec_type = simd_type::Vec_type;
+
+		const auto result = roundi(static_cast<Vec_type>(v));
+
+		using long_type = rebind_simd_t<int, simd_type>; // TODO: `long`, not `int` ?
+		return long_type(result);
 	}
 
 	template<typename T, typename Abi>
