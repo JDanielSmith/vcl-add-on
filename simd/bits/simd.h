@@ -29,6 +29,11 @@ namespace simd
 	template<typename T, typename U = typename T::value_type>
 		inline constexpr size_t simd_alignment_v = simd_alignment<T, U>::value;
 
+	//template<typename T, typename V> struct rebind_simd;
+	//template<typename T, typename V> using rebind_simd_t = typename rebind_simd<T, V>::type;
+	//template<details::size_type N, typename V> struct resize_simd;
+	//template<details::size_type N, typename V> using resize_simd_t = typename resize_simd<N, V>::type;
+
 	// [simd.flags]
 	template <typename... Flags> struct simd_flags;
 	//inline constexpr simd_flags<> simd_flag_default{};
