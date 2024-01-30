@@ -45,6 +45,20 @@ namespace simd
 		template<typename U, typename UAbi>
 		constexpr explicit basic_simd(const basic_simd<U, UAbi>& other) noexcept;
 		template<typename G> constexpr explicit basic_simd(G&& gen, std::nullptr_t /*TODO: remove*/) noexcept;
+		//template<typename It, typename... Flags>
+		//constexpr basic_simd(It first, simd_flags<Flags...> = {});
+		//template<typename It, typename... Flags>
+		//constexpr basic_simd(It first, const mask_type& mask, simd_flags<Flags...> = {});
+
+		// [simd.copy]
+		template<typename It, typename... Flags>
+		constexpr void copy_from(It first, simd_flags<Flags...> f = {});
+		template<typename It, typename... Flags>
+		constexpr void copy_from(It first, const mask_type& mask, simd_flags<Flags...> f = {});
+		template<typename Out, typename... Flags>
+		constexpr void copy_to(Out first, simd_flags<Flags...> f = {}) const;
+		template<typename Out, typename... Flags>
+		constexpr void copy_to(Out first, const mask_type& mask, simd_flags<Flags...> f = {}) const;
 
 		// [simd.subscr]
 		constexpr auto& operator[](details::size_type)&;
@@ -107,15 +121,50 @@ namespace simd
 			template<typename UVec>
 			constexpr explicit Vec_basic_simd(const Vec_basic_simd<UVec>& other) noexcept : v_(other.v_) {}
 			template<typename G> constexpr explicit Vec_basic_simd(G&& gen, std::nullptr_t /*TODO: remove*/) noexcept;
+			//template<typename It, typename... Flags>
+			//constexpr Vec_basic_simd(It first, simd_flags<Flags...> f = {})
+			//{
+			//	copy_from(first, f);
+			//}
+			//template<class It, class... Flags>
+			//constexpr basic_simd(It first, const mask_type& mask, simd_flags<Flags...> = {});
 
 			// "Implementations should enable explicit conversion from and to implementation-defined types."
 			constexpr explicit operator Vec_type() const { return v_; }
 			constexpr explicit Vec_basic_simd(const Vec_type& init) : v_(init) {}
 
+			// [simd.copy]
+			template<typename It, typename... Flags>
+			constexpr void copy_from(It first, simd_flags<Flags...> = {})
+			{
+				// TODO: look at simd_flags
+				// However, section 2.4 states "There is hardly any difference in efficiency
+				// between `load` and `load_a` on newer microprocessors."
+
+				// "`It` satisfies contiguous_iterator."
+				const auto mem = &(*first);
+				v_.load(mem);
+			}
+			//template<typename It, typename... Flags>
+			//constexpr void copy_from(It first, const mask_type& mask, simd_flags<Flags...> f = {});
+			template<typename Out, typename... Flags>
+			constexpr void copy_to(Out first, simd_flags<Flags...> = {}) const
+			{
+				// TODO: look at simd_flags
+				// However, section 2.5 states "There is hardly any difference in efficiency
+				// between `store` and `store_a` on newer microprocessors."
+
+				// "`It` satisfies contiguous_iterator."
+				auto mem = &(*first);
+				v_.store(mem);
+			}
+			//template<typename Out, typename... Flags>
+			//constexpr void copy_to(Out first, const mask_type& mask, simd_flags<Flags...> f = {}) const;
+
 			// [simd.subscr]
 			// Section 2.5 of https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
 			// "Note that you can read a vector element with the[] operator, but not write an element."
-			constexpr auto& operator[](details::size_type) & = delete; 
+			constexpr value_type& operator[](details::size_type) & = delete;
 			constexpr value_type operator[](details::size_type i) const& { return v_[i]; }
 
 		private:
