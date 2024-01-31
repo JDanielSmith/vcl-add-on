@@ -41,7 +41,7 @@ namespace simd
 			if constexpr (detected_instrset <= instrset::AVX2) return 256;
 			return 512;
 		}
-		static constexpr auto detected_vector_size = detect_vector_size();
+		constexpr auto detected_vector_size = detect_vector_size();
 
 		// See §2.5 of https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
 		template<int elementtype> struct Vec_value_type_;
@@ -61,6 +61,14 @@ namespace simd
 		template<int elementtype>
 		using Vec_value_type = Vec_value_type_<elementtype>::type;
 
+		template<size_type width> struct fixed_size_;
+		template<> struct fixed_size_<2> { static constexpr size_type total_bits = 128; };
+		template<> struct fixed_size_<4> { static constexpr size_type total_bits = 256; /* or 128 */ };
+		template<> struct fixed_size_<8> { static constexpr size_type total_bits = max_vector_size; /* or 128 or 256 */ };
+		template<> struct fixed_size_<16> { static constexpr size_type total_bits = max_vector_size; /* or 128 or 256 */ };
+		template<> struct fixed_size_<32> { static constexpr size_type total_bits = max_vector_size; /* or 256 */ };
+		template<> struct fixed_size_<64> { static constexpr size_type total_bits = max_vector_size; };
+
 		// See tables 2.1 and 2.2 of https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
 		template<size_type N, typename T> struct vector_class_;
 		template<size_type N, typename T, typename Vec> struct vector_class_base_
@@ -73,6 +81,8 @@ namespace simd
 			static_assert(std::is_same_v<type, Vec_value_type<Vector_class::elementtype()>>);
 			static_assert(elements_per_vector == Vector_class::size());
 			static_assert(total_bits <= max_vector_size);
+
+			using fixed_size = fixed_size_<elements_per_vector>;
 		};
 
 		#define VECTORCLASS_vector_class_(N_, type_, suffix_) \
@@ -137,96 +147,28 @@ namespace simd
 		template<typename Vec>
 		using for_use_with = for_use_with_<Vec>::Vector_class;
 
-		template<size_type width> struct fixed_size_;
-		template<> struct fixed_size_<2> { static constexpr size_type vector_size = 128; };
-		template<> struct fixed_size_<4> { static constexpr size_type vector_size = 256; /* or 128 */ };
-		template<> struct fixed_size_<8> { static constexpr size_type vector_size = max_vector_size; /* or 128 or 256 */ };
-		template<> struct fixed_size_<16> { static constexpr size_type vector_size = max_vector_size; /* or 128 or 256 */ };
-		template<> struct fixed_size_<32> { static constexpr size_type vector_size = max_vector_size; /* or 256 */ };
-		template<> struct fixed_size_<64> { static constexpr size_type vector_size = max_vector_size; };
-
-		template <typename T, size_type vector_size> struct native_abi_ {};
-		// See tables 2.1 and 2.2 of https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
-		// 128 Total bits
-		template<> struct native_abi_<int8_t, 128> { using fixed_size = fixed_size_<16>; static constexpr size_type vector_size = 128; };
-		template<> struct native_abi_<uint8_t, 128> { using fixed_size = fixed_size_<16>; static constexpr size_type vector_size = 128; };
-		template<> struct native_abi_<int16_t, 128> { using fixed_size = fixed_size_<8>; static constexpr size_type vector_size = 128; };
-		template<> struct native_abi_<uint16_t, 128> { using fixed_size = fixed_size_<8>; static constexpr size_type vector_size = 128; };
-		template<> struct native_abi_<int32_t, 128> { using fixed_size = fixed_size_<4>; static constexpr size_type vector_size = 128; };
-		template<> struct native_abi_<uint32_t, 128> { using fixed_size = fixed_size_<4>; static constexpr size_type vector_size = 128; };
-		template<> struct native_abi_<int64_t, 128> { using fixed_size = fixed_size_<2>; static constexpr size_type vector_size = 128; };
-		template<> struct native_abi_<uint64_t, 128> { using fixed_size = fixed_size_<2>; static constexpr size_type vector_size = 128; };
-		template<> struct native_abi_<float, 128> { using fixed_size = fixed_size_<4>; static constexpr size_type vector_size = 128; };
-		template<> struct native_abi_<double, 128> { using fixed_size = fixed_size_<2>; static constexpr size_type vector_size = 128; };
-		// 256 Total bits
-		template<> struct native_abi_<int8_t, 256> { using fixed_size = fixed_size_<32>; static constexpr size_type vector_size = 256; };
-		template<> struct native_abi_<uint8_t, 256> { using fixed_size = fixed_size_<32>; static constexpr size_type vector_size = 256; };
-		template<> struct native_abi_<int16_t, 256> { using fixed_size = fixed_size_<16>; static constexpr size_type vector_size = 256; };
-		template<> struct native_abi_<uint16_t, 256> { using fixed_size = fixed_size_<16>; static constexpr size_type vector_size = 256; };
-		template<> struct native_abi_<int32_t, 256> { using fixed_size = fixed_size_<8>; static constexpr size_type vector_size = 256; };
-		template<> struct native_abi_<uint32_t, 256> { using fixed_size = fixed_size_<8>; static constexpr size_type vector_size = 256; };
-		template<> struct native_abi_<int64_t, 256> { using fixed_size = fixed_size_<4>; static constexpr size_type vector_size = 256; };
-		template<> struct native_abi_<uint64_t, 256> { using fixed_size = fixed_size_<4>; static constexpr size_type vector_size = 256; };
-		template<> struct native_abi_<float, 256> { using fixed_size = fixed_size_<8>; static constexpr size_type vector_size = 256; };
-		template<> struct native_abi_<double, 256> { using fixed_size = fixed_size_<4>; static constexpr size_type vector_size = 256; };
-		// 512 Total bits
-		template<> struct native_abi_<int8_t, 512> { using fixed_size = fixed_size_<64>; static constexpr size_type vector_size = 512; };
-		template<> struct native_abi_<uint8_t, 512> { using fixed_size = fixed_size_<64>; static constexpr size_type vector_size = 512; };
-		template<> struct native_abi_<int16_t, 512> { using fixed_size = fixed_size_<32>; static constexpr size_type vector_size = 512; };
-		template<> struct native_abi_<uint16_t, 512> { using fixed_size = fixed_size_<32>; static constexpr size_type vector_size = 512; };
-		template<> struct native_abi_<int32_t, 512> { using fixed_size = fixed_size_<16>; static constexpr size_type vector_size = 512; };
-		template<> struct native_abi_<uint32_t, 512> { using fixed_size = fixed_size_<16>; static constexpr size_type vector_size = 512; };
-		template<> struct native_abi_<int64_t, 512> { using fixed_size = fixed_size_<8>; static constexpr size_type vector_size = 512; };
-		template<> struct native_abi_<uint64_t, 512> { using fixed_size = fixed_size_<8>; static constexpr size_type vector_size = 512; };
-		template<> struct native_abi_<float, 512> { using fixed_size = fixed_size_<16>; static constexpr size_type vector_size = 512; };
-		template<> struct native_abi_<double, 512> { using fixed_size = fixed_size_<8>; static constexpr size_type vector_size = 512; };
-
-		template <typename T, size_type vector_size, size_type N> struct deduce_t_ {};
-		// See tables 2.1 and 2.2 of https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
-		// 128 Total bits
-		template<> struct deduce_t_<int8_t, 128, 16> { using fixed_size = fixed_size_<16>; };
-		template<> struct deduce_t_<uint8_t, 128, 16> { using fixed_size = fixed_size_<16>; };
-		template<> struct deduce_t_<int16_t, 128, 8> { using fixed_size = fixed_size_<8>; };
-		template<> struct deduce_t_<uint16_t, 128, 8> { using fixed_size = fixed_size_<8>; };
-		template<> struct deduce_t_<int32_t, 128, 4> { using fixed_size = fixed_size_<4>; };
-		template<> struct deduce_t_<uint32_t, 128, 4> { using fixed_size = fixed_size_<4>; };
-		template<> struct deduce_t_<int64_t, 128, 2> { using fixed_size = fixed_size_<2>; };
-		template<> struct deduce_t_<uint64_t, 128, 2> { using fixed_size = fixed_size_<2>; };
-		template<> struct deduce_t_<float, 128, 4> { using fixed_size = fixed_size_<4>; };
-		template<> struct deduce_t_<double, 128, 2> { using fixed_size = fixed_size_<2>; };
-		// 256 Total bits
-		template<> struct deduce_t_<int8_t, 256, 32> { using fixed_size = fixed_size_<32>; };
-		template<> struct deduce_t_<uint8_t, 256, 32> { using fixed_size = fixed_size_<32>; };
-		template<> struct deduce_t_<int16_t, 256, 16> { using fixed_size = fixed_size_<16>; };
-		template<> struct deduce_t_<uint16_t, 256, 16> { using fixed_size = fixed_size_<16>; };
-		template<> struct deduce_t_<int32_t, 256, 8> { using fixed_size = fixed_size_<8>; };
-		template<> struct deduce_t_<uint32_t, 256, 8> { using fixed_size = fixed_size_<8>; };
-		template<> struct deduce_t_<int64_t, 256, 4> { using fixed_size = fixed_size_<4>; };
-		template<> struct deduce_t_<uint64_t, 256, 4> { using fixed_size = fixed_size_<4>; };
-		template<> struct deduce_t_<float, 256, 8> { using fixed_size = fixed_size_<8>; };
-		template<> struct deduce_t_<double, 256, 4> { using fixed_size = fixed_size_<4>; };
-		// 512 Total bits
-		template<> struct deduce_t_<int8_t, 512, 64> { using fixed_size = fixed_size_<64>; };
-		template<> struct deduce_t_<uint8_t, 512, 64> { using fixed_size = fixed_size_<64>; };
-		template<> struct deduce_t_<int16_t, 512, 32> { using fixed_size = fixed_size_<32>; };
-		template<> struct deduce_t_<uint16_t, 512, 32> { using fixed_size = fixed_size_<32>; };
-		template<> struct deduce_t_<int32_t, 512, 16> { using fixed_size = fixed_size_<16>; };
-		template<> struct deduce_t_<uint32_t, 512, 16> { using fixed_size = fixed_size_<16>; };
-		template<> struct deduce_t_<int64_t, 512, 8> { using fixed_size = fixed_size_<8>; };
-		template<> struct deduce_t_<uint64_t, 512, 8> { using fixed_size = fixed_size_<8>; };
-		template<> struct deduce_t_<float, 512, 16> { using fixed_size = fixed_size_<16>; };
-		template<> struct deduce_t_<double, 512, 8> { using fixed_size = fixed_size_<8>; };
-
 		namespace simd_abi
 		{
 			template<size_type N>
 			using fixed_size = fixed_size_<N>;
 
-			template<typename T>
-			using native_abi = native_abi_<T, max_vector_size>::fixed_size;
+			template <typename T, size_type total_bits>
+			struct native_abi_ : public vector_class_<(total_bits / 8) / sizeof(T), T>
+			{
+				using base_type = vector_class_<(total_bits / 8) / sizeof(T), T>;
+				static_assert(total_bits == base_type::total_bits);
+			};
+			template <typename T>
+			using native_abi = native_abi_<T, detected_vector_size>::fixed_size;
 
-			template<typename T, size_type N, typename Abi = native_abi_<T, max_vector_size>>
-			using deduce_t = deduce_t_<T, Abi::vector_size, N>::fixed_size;
+			template <typename T, size_type N>
+			struct deduce_t_ : public vector_class_<N, T>
+			{
+				using base_type = vector_class_<N, T>;
+				static_assert(N == base_type::elements_per_vector);
+			};
+			template<typename T, size_type N, typename Abi = native_abi_<T, detected_vector_size>>
+			using deduce_t = deduce_t_<T, N>::fixed_size;
 		}
 	}
 }

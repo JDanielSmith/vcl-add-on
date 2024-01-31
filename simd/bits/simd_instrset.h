@@ -39,7 +39,7 @@ namespace simd
 			// From **instrset.h**: "In the future, INSTRSET = 11 may include AVX512VBMI and AVX512VBMI2 ..."
 			// AVX512VBMI = 11, AVX512VBMI2 = 11,
 		};
-		static constexpr auto detected_instrset = static_cast<instrset>(INSTRSET);
+		constexpr auto detected_instrset = static_cast<instrset>(INSTRSET);
 
 		inline instrset instrset_detect() // runtime—not compile-time—value
 		{
