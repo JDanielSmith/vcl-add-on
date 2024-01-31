@@ -13,8 +13,8 @@
 #pragma warning(pop)
 #endif
 
-#include "simd_basic.h"
-#include "simd_basic_mask.h"
+#include "simd_basic_simd.h"
+#include "simd_basic_simd_mask.h"
 #include "simd_abi.h"
 
 #ifdef VCL_NAMESPACE
@@ -27,13 +27,13 @@ namespace simd
 	template<typename T, typename U, typename Abi0>
 	struct rebind_simd<T, basic_simd<U, Abi0>>
 	{
-		using Abi1 = simd_abi::deduce_t<T, basic_simd<U, Abi0>::size, Abi0>;
+		using Abi1 = details::simd_abi::deduce_t<T, basic_simd<U, Abi0>::size, Abi0>;
 		using type = basic_simd<T, Abi1>;
 	};
 	template<typename T, typename U, typename Abi0>
 	struct rebind_simd<T, basic_simd_mask<U, Abi0>>
 	{
-		using Abi1 = simd_abi::deduce_t<T, basic_simd_mask<U, Abi0>::size, Abi0>;
+		using Abi1 = details::simd_abi::deduce_t<T, basic_simd_mask<U, Abi0>::size, Abi0>;
 		using type = basic_simd_mask<T, Abi1>;
 	};
 	template<typename T, typename V>
@@ -43,13 +43,13 @@ namespace simd
 	template<details::size_type N, typename T, typename Abi0>
 	struct resize_simd<N, basic_simd<T, Abi0>>
 	{
-		using Abi1 = simd_abi::deduce_t<T, N, Abi0>;
+		using Abi1 = details::simd_abi::deduce_t<T, N, Abi0>;
 		using type = basic_simd<T, Abi1>;
 	};
 	template<details::size_type N, typename T, typename Abi0>
 	struct resize_simd<N, basic_simd_mask<T, Abi0>>
 	{
-		using Abi1 = simd_abi::deduce_t<T, N, Abi0>;
+		using Abi1 = details::simd_abi::deduce_t<T, N, Abi0>;
 		using type = basic_simd_mask<T, Abi1>;
 	};
 	template<details::size_type N, typename V>

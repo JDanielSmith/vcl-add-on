@@ -1,12 +1,8 @@
 #pragma once
 
-#include "bits/simd_detail.h"
 #include "bits/simd.h"
-#include "bits/simd_basic.h"
-#include "bits/simd_basic_mask.h"
-#include "bits/simd_fixed_size.h"
-#include "bits/simd_scalar.h"
+#include "bits/simd_basic_simd.h"
+#include "bits/simd_basic_simd_mask.h"
 #include "bits/simd_builtin.h"
-#include "bits/simd_converter.h"
 #include "bits/simd_math.h"
 #include "bits/simd_traits.h"

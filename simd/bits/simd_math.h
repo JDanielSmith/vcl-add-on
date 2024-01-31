@@ -13,7 +13,7 @@
 #pragma warning(pop)
 #endif
 
-#include "simd_basic.h"
+#include "simd_basic_simd.h"
 #include "simd_traits.h"
 
 #ifdef VCL_NAMESPACE

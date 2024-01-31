@@ -13,8 +13,8 @@
 #pragma warning(pop)
 #endif
 
-#include "simd_basic.h"
-#include "simd_basic_mask.h"
+#include "simd_basic_simd.h"
+#include "simd_basic_simd_mask.h"
 
 #ifdef VCL_NAMESPACE
 namespace VCL_NAMESPACE {
