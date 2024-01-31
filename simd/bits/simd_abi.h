@@ -33,6 +33,15 @@ namespace simd
 		#endif
 
 		// See tables 2.1 and 2.2 of https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
+		constexpr size_type detect_vector_size()
+		{
+			if constexpr (detected_instrset <= instrset::SSE2) return 128;
+			if constexpr (detected_instrset <= instrset::AVX2) return 256;
+			return 512;
+		}
+		static constexpr auto detected_vector_size = detect_vector_size();
+
+		// See tables 2.1 and 2.2 of https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
 		template<size_type N, typename T> struct Vec_N_T;
 		// 128 Total bits
 		template<> struct Vec_N_T<16, int8_t> { using type = Vec16c; };
@@ -134,7 +143,7 @@ namespace simd
 		template<> struct fixed_size_<32> { static constexpr size_type vector_size = max_vector_size; /* or 256 */ };
 		template<> struct fixed_size_<64> { static constexpr size_type vector_size = max_vector_size; };
 
-		template <typename T, size_type max_vector_size> struct native_abi_ {};
+		template <typename T, size_type vector_size> struct native_abi_ {};
 		// See tables 2.1 and 2.2 of https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
 		// 128 Total bits
 		template<> struct native_abi_<int8_t, 128> { using fixed_size = fixed_size_<16>; static constexpr size_type vector_size = 128; };
@@ -170,7 +179,7 @@ namespace simd
 		template<> struct native_abi_<float, 512> { using fixed_size = fixed_size_<16>; static constexpr size_type vector_size = 512; };
 		template<> struct native_abi_<double, 512> { using fixed_size = fixed_size_<8>; static constexpr size_type vector_size = 512; };
 
-		template <typename T, size_type max_vector_size, size_type N> struct deduce_t_ {};
+		template <typename T, size_type vector_size, size_type N> struct deduce_t_ {};
 		// See tables 2.1 and 2.2 of https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
 		// 128 Total bits
 		template<> struct deduce_t_<int8_t, 128, 16> { using fixed_size = fixed_size_<16>; };
