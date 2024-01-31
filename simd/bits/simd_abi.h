@@ -33,6 +33,7 @@ namespace simd
 		#else
 		constexpr size_type max_vector_size = 128;
 		#endif
+		static_assert(max_vector_size <= 512);
 
 		// See tables 2.1 and 2.2 of https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
 		constexpr size_type detect_vector_size()
@@ -61,17 +62,17 @@ namespace simd
 		template<int elementtype>
 		using Vec_value_type = Vec_value_type_<elementtype>::type;
 
-		template<size_type width> struct fixed_size_;
+		template<size_type N> struct fixed_size_;
 		template<> struct fixed_size_<2> { static constexpr size_type total_bits = 128; };
-		template<> struct fixed_size_<4> { static constexpr size_type total_bits = 256; /* or 128 */ };
-		template<> struct fixed_size_<8> { static constexpr size_type total_bits = max_vector_size; /* or 128 or 256 */ };
-		template<> struct fixed_size_<16> { static constexpr size_type total_bits = max_vector_size; /* or 128 or 256 */ };
-		template<> struct fixed_size_<32> { static constexpr size_type total_bits = max_vector_size; /* or 256 */ };
-		template<> struct fixed_size_<64> { static constexpr size_type total_bits = max_vector_size; };
+		template<> struct fixed_size_<4> { static constexpr size_type total_bits = detected_vector_size <= 256 ? detected_vector_size : 256; /* 128 or 256 */ };
+		template<> struct fixed_size_<8> { static constexpr size_type total_bits = detected_vector_size; /* 128, 256 or 512 */ };
+		template<> struct fixed_size_<16> { static constexpr size_type total_bits = detected_vector_size; /* 128, 256 or 512 */  };
+		template<> struct fixed_size_<32> { static constexpr size_type total_bits = detected_vector_size >= 256 ? detected_vector_size : 256; /* 256 or 512 */ };
+		template<> struct fixed_size_<64> { static constexpr size_type total_bits = 512; };
 
 		// See tables 2.1 and 2.2 of https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
-		template<size_type N, typename T> struct vector_class_;
-		template<size_type N, typename T, typename Vec> struct vector_class_base_
+		template<size_type N, typename T> struct Vector_class_;
+		template<size_type N, typename T, typename Vec> struct Vector_class_base
 		{
 			using Vector_class = Vec;
 			static constexpr auto elements_per_vector = N; // aka "width" or "elements per vector"
@@ -84,38 +85,36 @@ namespace simd
 
 			using fixed_size = fixed_size_<elements_per_vector>;
 		};
-
-		#define VECTORCLASS_vector_class_(N_, type_, suffix_) \
-			template<> struct vector_class_<N_, type_> : public vector_class_base_<N_, type_, Vec ## N_ ## suffix_> { }
-		#define VECTORCLASS_vector_class_integer(N_, bits_, suffix_) \
-			VECTORCLASS_vector_class_(N_, int ## bits_ ## _t, suffix_); 	VECTORCLASS_vector_class_(N_, uint ## bits_ ## _t, u ## suffix_)
-
+		#define VECTORCLASS_Vector_class_(N_, type_, suffix_) \
+			template<> struct Vector_class_<N_, type_> : public Vector_class_base<N_, type_, Vec ## N_ ## suffix_> { }
+		#define VECTORCLASS_Vector_class_integer(N_, bits_, suffix_) \
+			VECTORCLASS_Vector_class_(N_, int ## bits_ ## _t, suffix_); VECTORCLASS_Vector_class_(N_, uint ## bits_ ## _t, u ## suffix_)
 		// 128 Total bits
-		VECTORCLASS_vector_class_integer(16, 8, c); // i.e., Vec16c and Vec16uc
-		VECTORCLASS_vector_class_integer(8, 16, s); // i.e., Vec8s and Vec8us
-		VECTORCLASS_vector_class_integer(4, 32, i); // i.e., Vec4i and Vec4ui
-		VECTORCLASS_vector_class_integer(2, 64, q); // i.e., Vec2q and Vec2uq
-		VECTORCLASS_vector_class_(4, float, f); // i.e., Vec4f
-		VECTORCLASS_vector_class_(2, double, d); // i.e., Vec2d
+		VECTORCLASS_Vector_class_integer(16, 8, c); // i.e., Vec16c and Vec16uc
+		VECTORCLASS_Vector_class_integer(8, 16, s); // i.e., Vec8s and Vec8us
+		VECTORCLASS_Vector_class_integer(4, 32, i); // i.e., Vec4i and Vec4ui
+		VECTORCLASS_Vector_class_integer(2, 64, q); // i.e., Vec2q and Vec2uq
+		VECTORCLASS_Vector_class_(4, float, f); // i.e., Vec4f
+		VECTORCLASS_Vector_class_(2, double, d); // i.e., Vec2d
 		// 256 Total bits
-		VECTORCLASS_vector_class_integer(32, 8, c); // i.e., Vec32c and Vec32uc
-		VECTORCLASS_vector_class_integer(16, 16, s); // i.e., Vec16s and Vec16us
-		VECTORCLASS_vector_class_integer(8, 32, i); // i.e., Vec8i and Vec8ui
-		VECTORCLASS_vector_class_integer(4, 64, q); // i.e., Vec4q and Vec4uq
-		VECTORCLASS_vector_class_(8, float, f); // i.e., Vec8f
-		VECTORCLASS_vector_class_(4, double, d); // i.e., Vec4d
+		VECTORCLASS_Vector_class_integer(32, 8, c); // i.e., Vec32c and Vec32uc
+		VECTORCLASS_Vector_class_integer(16, 16, s); // i.e., Vec16s and Vec16us
+		VECTORCLASS_Vector_class_integer(8, 32, i); // i.e., Vec8i and Vec8ui
+		VECTORCLASS_Vector_class_integer(4, 64, q); // i.e., Vec4q and Vec4uq
+		VECTORCLASS_Vector_class_(8, float, f); // i.e., Vec8f
+		VECTORCLASS_Vector_class_(4, double, d); // i.e., Vec4d
 		// 512 Total bits
-		VECTORCLASS_vector_class_integer(64, 8, c); // i.e., Vec64c and Vec64uc
-		VECTORCLASS_vector_class_integer(32, 16, s); // i.e., Vec32s and Vec32us
-		VECTORCLASS_vector_class_integer(16, 32, i); // i.e., Vec16i and Vec16ui
-		VECTORCLASS_vector_class_integer(8, 64, q); // i.e., Vec8q and Vec8uq
-		VECTORCLASS_vector_class_(16, float, f); // i.e., Vec16f
-		VECTORCLASS_vector_class_(8, double, d); // i.e., Vec8d
-		#undef VECTORCLASS_vector_class_integer
-		#undef VECTORCLASS_vector_class_
+		VECTORCLASS_Vector_class_integer(64, 8, c); // i.e., Vec64c and Vec64uc
+		VECTORCLASS_Vector_class_integer(32, 16, s); // i.e., Vec32s and Vec32us
+		VECTORCLASS_Vector_class_integer(16, 32, i); // i.e., Vec16i and Vec16ui
+		VECTORCLASS_Vector_class_integer(8, 64, q); // i.e., Vec8q and Vec8uq
+		VECTORCLASS_Vector_class_(16, float, f); // i.e., Vec16f
+		VECTORCLASS_Vector_class_(8, double, d); // i.e., Vec8d
+		#undef VECTORCLASS_Vector_class_integer
+		#undef VECTORCLASS_Vector_class_
 
 		template<size_type N, typename T>
-		using Vec = vector_class_<N, T>::Vector_class;
+		using Vec = Vector_class_<N, T>::Vector_class;
 
 		// See tables 2.3 of https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
 		template<typename Vec> struct for_use_with_;
@@ -153,18 +152,18 @@ namespace simd
 			using fixed_size = fixed_size_<N>;
 
 			template <typename T, size_type total_bits>
-			struct native_abi_ : public vector_class_<(total_bits / 8) / sizeof(T), T>
+			struct native_abi_ : public Vector_class_<(total_bits / 8) / sizeof(T), T>
 			{
-				using base_type = vector_class_<(total_bits / 8) / sizeof(T), T>;
+				using base_type = Vector_class_<(total_bits / 8) / sizeof(T), T>;
 				static_assert(total_bits == base_type::total_bits);
 			};
 			template <typename T>
 			using native_abi = native_abi_<T, detected_vector_size>::fixed_size;
 
 			template <typename T, size_type N>
-			struct deduce_t_ : public vector_class_<N, T>
+			struct deduce_t_ : public Vector_class_<N, T>
 			{
-				using base_type = vector_class_<N, T>;
+				using base_type = Vector_class_<N, T>;
 				static_assert(N == base_type::elements_per_vector);
 			};
 			template<typename T, size_type N, typename Abi = native_abi_<T, detected_vector_size>>
