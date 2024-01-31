@@ -121,7 +121,7 @@ namespace simd
 		class Vec_basic_simd {
 		public:
 			using Vec_type = Vec;
-			using value_type = Vec_elementtype<Vec_type::elementtype()>;
+			using value_type = Vec_elementtype_t<Vec_type::elementtype()>;
 			//using reference = see below;
 			using abi_type = details::simd_abi::fixed_size<Vec_type::size()>;
 			//using abi_type = details::Vcl_native_abi<Vec_type::size(), value_type>;

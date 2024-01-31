@@ -53,10 +53,10 @@ namespace simd
 		// pick the right Vec mask for the given Vec.
 		template<typename Vec> // this is e.g., `Vec16i`, **not** `Vec16ib`
 		class Vec_basic_simd_mask {
-			using T = Vec_elementtype<Vec::elementtype()>; // e.g., `int32_t`
+			using T = Vec_elementtype_t<Vec::elementtype()>; // e.g., `int32_t`
 		public:
 			static constexpr auto Bytes = sizeof(T); // sizeof(int32_t) == sizeof(uint32_t)
-			using Vec_type = Vclb_native_abi<Vec::size(), Vec>::Boolean_vector_class; // e.g, Vec_type=Vec16ib for Vec=Vec16i
+			using Vec_type = Vecb_abi<Vec>::Boolean_vector_class; // e.g, Vec_type=Vec16ib for Vec=Vec16i
 			using value_type = bool;
 			//using reference = see below;
 			using abi_type = details::simd_abi::fixed_size<Vec_type::size()>;
