@@ -124,6 +124,7 @@ namespace simd
 			using value_type = Vec_value_type<Vec_type::elementtype()>;
 			//using reference = see below;
 			using abi_type = details::simd_abi::fixed_size<Vec_type::size()>;
+			//using abi_type = details::Vcl_native_abi<Vec_type::size(), value_type>;
 			using mask_type = basic_simd_mask<value_type, abi_type>; // TODO: basic_simd_mask<sizeof(T), Abi>; ???
 
 			static constexpr std::integral_constant<details::size_type, Vec::size()> size;

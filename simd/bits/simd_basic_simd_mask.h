@@ -56,10 +56,11 @@ namespace simd
 			using T = Vec_value_type<Vec::elementtype()>; // e.g., `int32_t`
 		public:
 			static constexpr auto Bytes = sizeof(T); // sizeof(int32_t) == sizeof(uint32_t)
-			using Vec_type = for_use_with<Vec>; // e.g, Vec_type=Vec16ib for Vec=Vec16i
+			using Vec_type = Vclb_native_abi<Vec::size(), Vec>::Boolean_vector_class; // e.g, Vec_type=Vec16ib for Vec=Vec16i
 			using value_type = bool;
 			//using reference = see below;
 			using abi_type = details::simd_abi::fixed_size<Vec_type::size()>;
+			//using abi_type = details::Vcl_native_abi<Vec::size(), T>;
 
 			static constexpr auto size = basic_simd<details::integer_from<Bytes>, abi_type>::size;
 			static_assert(Vec_type::size() == basic_simd<details::integer_from<Bytes>, abi_type>::size());

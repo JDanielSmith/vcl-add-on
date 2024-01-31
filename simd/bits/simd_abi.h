@@ -53,11 +53,11 @@ namespace simd
 		template<int elementtype>
 		using Vec_value_type = Vec_value_type_<elementtype>::type;
 
-		template<size_type N, size_type total_bits> struct fixed_size_;
-		template<size_type N, size_type total_bits_> struct fixed_size_base
+		template<size_type N, size_type Total_bits> struct fixed_size_;
+		template<size_type N, size_type Total_bits_> struct fixed_size_base
 		{
-			static constexpr auto elements_per_vector = N; // aka "width"
-			static constexpr auto total_bits = total_bits_;
+			static constexpr auto Elements_per_vector = N; // aka "width"
+			static constexpr auto Total_bits = Total_bits_;
 		};
 		#define VECTORCLASS_fixed_size_(N_, bits_) template<> struct fixed_size_<N_, bits_> : public fixed_size_base<N_, bits_> { }
 		VECTORCLASS_fixed_size_(2, 128);
@@ -73,15 +73,15 @@ namespace simd
 		template<size_type N, typename T, typename Vec> struct Vcl_native_abi_base
 		{
 			using Vector_class = Vec; // e.g., Vec4i
-			static constexpr auto elements_per_vector = N; // aka "width"
+			static constexpr auto Elements_per_vector = N; // aka "width"
 			using type = T; // e.g., `int32_t` or `float`
-			static constexpr auto total_bits = elements_per_vector * sizeof(type) * 8; // 128, 256 or 512
+			static constexpr auto Total_bits = Elements_per_vector * sizeof(type) * 8; // 128, 256 or 512
 
 			static_assert(std::is_same_v<type, Vec_value_type<Vector_class::elementtype()>>);
-			static_assert(elements_per_vector == Vector_class::size());
-			static_assert(total_bits <= MAX_VECTOR_SIZE);
+			static_assert(Elements_per_vector == Vector_class::size());
+			static_assert(Total_bits <= MAX_VECTOR_SIZE);
 
-			using fixed_size = fixed_size_<elements_per_vector, total_bits>;
+			using fixed_size = fixed_size_<Elements_per_vector, Total_bits>;
 		};
 		#define VECTORCLASS_Vcl_native_abi(N_, type_, suffix_) \
 			template<> struct Vcl_native_abi<N_, type_> : public Vcl_native_abi_base<N_, type_, Vec ## N_ ## suffix_> { }
@@ -114,43 +114,55 @@ namespace simd
 		template<size_type N, typename T>
 		using Vec = Vcl_native_abi<N, T>::Vector_class;
 
-		// See tables 2.3 of https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
-		template<typename Vec> struct for_use_with_;
-		#define VECTORCLASS_for_use_with_(N_, suffix_) \
-			template<> struct for_use_with_<Vec ## N_ ## suffix_> { using Vector_class = Vec ## N_ ## suffix_ ## b; }; \
-			template<> struct for_use_with_<Vec ## N_ ## u ## suffix_> { using Vector_class = Vec ## N_ ## suffix_ ## b; }
+		// See table 2.3 of https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
+		template<size_type N, typename Vec> struct Vclb_native_abi;
+		template<size_type N, typename Vec, typename Vecb> struct Vclb_native_abi_base
+		{
+			using Boolean_vector_class = Vecb; // e.g., Vec4ib
+			using For_use_with = Vec; // i.e., Vec4i or Vec4ui
+			static constexpr auto Elements_per_vector = N; // aka "width"
+			using type = bool;
+			static constexpr auto Total_bits = Elements_per_vector * sizeof(type) * 8; // 128, 256 or 512
+
+			//static_assert(std::is_same_v<type, Vec_value_type<Vector_class::elementtype()>>);
+			static_assert(Elements_per_vector == Boolean_vector_class::size());
+			//static_assert(Elements_per_vector == Vcl_native_abi<N, For_use_with>::Elements_per_vector);
+			static_assert(Total_bits <= MAX_VECTOR_SIZE);
+
+			using fixed_size = fixed_size_<Elements_per_vector, Total_bits>;
+		};
+		#define VECTORCLASS_Vclb_native_abi(N_, suffix_) \
+			template<> struct Vclb_native_abi<N_, Vec ## N_ ## suffix_> : public Vclb_native_abi_base<N_, Vec ## N_ ## suffix_, Vec ## N_ ## suffix_ ## b>{}; \
+			template<> struct Vclb_native_abi<N_, Vec ## N_ ## u ## suffix_> : public Vclb_native_abi_base<N_, Vec ## N_ ## suffix_, Vec ## N_ ## suffix_ ## b>{}
 		// 128 Total bits
-		VECTORCLASS_for_use_with_(16, c); // i.e., Vec16cb
-		VECTORCLASS_for_use_with_(8, s); // i.e., Vec8sb
-		VECTORCLASS_for_use_with_(4, i); // i.e., Vec4ib
-		VECTORCLASS_for_use_with_(2, q); // i.e., Vec2qb
-		template<> struct for_use_with_<Vec4f> { using Vector_class = Vec4fb; };
-		template<> struct for_use_with_<Vec2d> { using Vector_class = Vec2db; };
+		VECTORCLASS_Vclb_native_abi(16, c); // i.e., Vec16cb
+		VECTORCLASS_Vclb_native_abi(8, s); // i.e., Vec8sb
+		VECTORCLASS_Vclb_native_abi(4, i); // i.e., Vec4ib
+		VECTORCLASS_Vclb_native_abi(2, q); // i.e., Vec2qb
+		template<> struct Vclb_native_abi<4, Vec4f> : public Vclb_native_abi_base<4, Vec4f, Vec4fb> {};
+		template<> struct Vclb_native_abi<2, Vec2d> : public Vclb_native_abi_base<2, Vec2d, Vec2db> {};
 		// 256 Total bits
-		VECTORCLASS_for_use_with_(32, c); // i.e., Vec32cb
-		VECTORCLASS_for_use_with_(16, s); // i.e., Vec16sb
-		VECTORCLASS_for_use_with_(8, i); // i.e., Vec8ib
-		VECTORCLASS_for_use_with_(4, q); // i.e., Vec4qb
-		template<> struct for_use_with_<Vec8f> { using Vector_class = Vec8fb; };
-		template<> struct for_use_with_<Vec4d> { using Vector_class = Vec4db; };
-		// 512 Total bits
-		VECTORCLASS_for_use_with_(64, c); // i.e., Vec64cb
-		VECTORCLASS_for_use_with_(32, s); // i.e., Vec32sb
-		VECTORCLASS_for_use_with_(16, i); // i.e., Vec16ib
-		VECTORCLASS_for_use_with_(8, q); // i.e., Vec8qb
-		template<> struct for_use_with_<Vec16f> { using Vector_class = Vec16fb; };
-		template<> struct for_use_with_<Vec8d> { using Vector_class = Vec8db; };
-		#undef VECTORCLASS_for_use_with_
-		template<typename Vec>
-		using for_use_with = for_use_with_<Vec>::Vector_class;
+		VECTORCLASS_Vclb_native_abi(32, c); // i.e., Vec32cb
+		VECTORCLASS_Vclb_native_abi(16, s); // i.e., Vec16sb
+		VECTORCLASS_Vclb_native_abi(8, i); // i.e., Vec8ib
+		VECTORCLASS_Vclb_native_abi(4, q); // i.e., Vec4qb
+		template<> struct Vclb_native_abi<8, Vec8f> : public Vclb_native_abi_base<8, Vec8f, Vec8fb> {};
+		template<> struct Vclb_native_abi<4, Vec4d> : public Vclb_native_abi_base<4, Vec4d, Vec4db> {};
+		VECTORCLASS_Vclb_native_abi(64, c); // i.e., Vec64cb
+		VECTORCLASS_Vclb_native_abi(32, s); // i.e., Vec32sb
+		VECTORCLASS_Vclb_native_abi(16, i); // i.e., Vec16ib
+		VECTORCLASS_Vclb_native_abi(8, q); // i.e., Vec8qb
+		template<> struct Vclb_native_abi<16, Vec16f> : public Vclb_native_abi_base<16, Vec16f, Vec16fb> {};
+		template<> struct Vclb_native_abi<8, Vec8d> : public Vclb_native_abi_base<8, Vec8d, Vec8db> {};
+		#undef VECTORCLASS_Vclb_native_abi
 
 		namespace simd_abi
 		{
 			template<size_type N>
 			using fixed_size = fixed_size_<N, detected_vector_size>;
 
-			template <typename T, size_type total_bits>
-			using native_abi_ = Vcl_native_abi<(total_bits / 8) / sizeof(T), T>;
+			template <typename T, size_type Total_bits>
+			using native_abi_ = Vcl_native_abi<(Total_bits / 8) / sizeof(T), T>;
 			template <typename T>
 			using native_abi = native_abi_<T, detected_vector_size>::fixed_size;
 
