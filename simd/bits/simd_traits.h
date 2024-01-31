@@ -23,44 +23,35 @@ namespace VCL_NAMESPACE {
 
 namespace simd
 {
-	namespace details
+	template<typename T, typename V> struct rebind_simd;
+	template<typename T, typename U, typename Abi0>
+	struct rebind_simd<T, basic_simd<U, Abi0>>
 	{
-		template<typename T, typename V> struct rebind_simd;
-		template<typename T, typename U, typename Abi0>
-		struct rebind_simd<T, basic_simd<U, Abi0>>
-		{
-			using Abi1 = simd_abi::deduce_t<T, basic_simd<U, Abi0>::size, Abi0>;
-			using type = basic_simd<T, Abi1>;
-		};
-		template<typename T, typename U, typename Abi0>
-		struct rebind_simd<T, basic_simd_mask<U, Abi0>>
-		{
-			using Abi1 = simd_abi::deduce_t<T, basic_simd_mask<U, Abi0>::size, Abi0>;
-			using type = basic_simd_mask<T, Abi1>;
-		};
-
-		template<size_type N, typename V> struct resize_simd;
-		template<size_type N, typename T, typename Abi0>
-		struct resize_simd<N, basic_simd<T, Abi0>>
-		{
-			using Abi1 = simd_abi::deduce_t<T, N, Abi0>;
-			using type = basic_simd<T, Abi1>;
-		};
-		template<size_type N, typename T, typename Abi0>
-		struct resize_simd<N, basic_simd_mask<T, Abi0>>
-		{
-			using Abi1 = simd_abi::deduce_t<T, N, Abi0>;
-			using type = basic_simd_mask<T, Abi1>;
-		};
-	}
-
-	template<typename T, typename V>
-	using rebind_simd = details::rebind_simd<T, V>;
+		using Abi1 = simd_abi::deduce_t<T, basic_simd<U, Abi0>::size, Abi0>;
+		using type = basic_simd<T, Abi1>;
+	};
+	template<typename T, typename U, typename Abi0>
+	struct rebind_simd<T, basic_simd_mask<U, Abi0>>
+	{
+		using Abi1 = simd_abi::deduce_t<T, basic_simd_mask<U, Abi0>::size, Abi0>;
+		using type = basic_simd_mask<T, Abi1>;
+	};
 	template<typename T, typename V>
 	using rebind_simd_t = rebind_simd<T, V>::type;
 
-	template<details::size_type N, typename V>
-	using resize_simd = details::resize_simd<N, V>;
+	template<details::size_type N, typename V> struct resize_simd;
+	template<details::size_type N, typename T, typename Abi0>
+	struct resize_simd<N, basic_simd<T, Abi0>>
+	{
+		using Abi1 = simd_abi::deduce_t<T, N, Abi0>;
+		using type = basic_simd<T, Abi1>;
+	};
+	template<details::size_type N, typename T, typename Abi0>
+	struct resize_simd<N, basic_simd_mask<T, Abi0>>
+	{
+		using Abi1 = simd_abi::deduce_t<T, N, Abi0>;
+		using type = basic_simd_mask<T, Abi1>;
+	};
 	template<details::size_type N, typename V>
 	using resize_simd_t = resize_simd<N, V>::type;
 }
