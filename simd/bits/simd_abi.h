@@ -14,6 +14,8 @@
 #pragma warning(pop)
 #endif
 
+#include "simd_instrset.h"
+
 #ifdef VCL_NAMESPACE
 namespace VCL_NAMESPACE {
 #endif
