@@ -26,15 +26,6 @@ namespace simd
 {
 	namespace details
 	{
-		#if MAX_VECTOR_SIZE >= 512
-		constexpr size_type max_vector_size = 512;
-		#elif MAX_VECTOR_SIZE >= 256
-		constexpr size_type max_vector_size = 256;
-		#else
-		constexpr size_type max_vector_size = 128;
-		#endif
-		static_assert(max_vector_size <= 512);
-
 		// See tables 2.1 and 2.2 of https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
 		constexpr size_type detect_vector_size()
 		{
@@ -62,13 +53,20 @@ namespace simd
 		template<int elementtype>
 		using Vec_value_type = Vec_value_type_<elementtype>::type;
 
-		template<size_type N> struct fixed_size_;
-		template<> struct fixed_size_<2> { static constexpr size_type total_bits = 128; };
-		template<> struct fixed_size_<4> { static constexpr size_type total_bits = detected_vector_size <= 256 ? detected_vector_size : 256; /* 128 or 256 */ };
-		template<> struct fixed_size_<8> { static constexpr size_type total_bits = detected_vector_size; /* 128, 256 or 512 */ };
-		template<> struct fixed_size_<16> { static constexpr size_type total_bits = detected_vector_size; /* 128, 256 or 512 */  };
-		template<> struct fixed_size_<32> { static constexpr size_type total_bits = detected_vector_size >= 256 ? detected_vector_size : 256; /* 256 or 512 */ };
-		template<> struct fixed_size_<64> { static constexpr size_type total_bits = 512; };
+		template<size_type N, size_type total_bits> struct fixed_size_;
+		template<size_type N, size_type total_bits_> struct fixed_size_base
+		{
+			static constexpr auto elements_per_vector = N; // aka "width" or "elements per vector"
+			static constexpr auto total_bits = total_bits_;
+		};
+		#define VECTORCLASS_fixed_size_(N_, bits_) template<> struct fixed_size_<N_, bits_> : public fixed_size_base<N_, bits_> { }
+		VECTORCLASS_fixed_size_(2, 128);
+		VECTORCLASS_fixed_size_(4, 128); VECTORCLASS_fixed_size_(4, 256);
+		VECTORCLASS_fixed_size_(8, 128); VECTORCLASS_fixed_size_(8, 256); VECTORCLASS_fixed_size_(8, 512);
+		VECTORCLASS_fixed_size_(16, 128); VECTORCLASS_fixed_size_(16, 256); 	VECTORCLASS_fixed_size_(16, 512);
+		VECTORCLASS_fixed_size_(32, 256); VECTORCLASS_fixed_size_(32, 512);
+		VECTORCLASS_fixed_size_(64, 512);
+		#undef VECTORCLASS_fixed_size_
 
 		// See tables 2.1 and 2.2 of https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
 		template<size_type N, typename T> struct Vector_class_;
@@ -81,9 +79,9 @@ namespace simd
 
 			static_assert(std::is_same_v<type, Vec_value_type<Vector_class::elementtype()>>);
 			static_assert(elements_per_vector == Vector_class::size());
-			static_assert(total_bits <= max_vector_size);
+			static_assert(total_bits <= MAX_VECTOR_SIZE);
 
-			using fixed_size = fixed_size_<elements_per_vector>;
+			using fixed_size = fixed_size_<elements_per_vector, total_bits>;
 		};
 		#define VECTORCLASS_Vector_class_(N_, type_, suffix_) \
 			template<> struct Vector_class_<N_, type_> : public Vector_class_base<N_, type_, Vec ## N_ ## suffix_> { }
@@ -149,7 +147,7 @@ namespace simd
 		namespace simd_abi
 		{
 			template<size_type N>
-			using fixed_size = fixed_size_<N>;
+			using fixed_size = fixed_size_<N, detected_vector_size>;
 
 			template <typename T, size_type total_bits>
 			struct native_abi_ : public Vector_class_<(total_bits / 8) / sizeof(T), T>
