@@ -68,6 +68,8 @@ namespace simd
 
 			// [simd.ctor]
 			template<typename U> constexpr Vec_basic_simd_mask(U&& value) noexcept : v_(value) {}
+			template<typename UVec_b, typename UAbi>
+			constexpr explicit Vec_basic_simd_mask(const basic_simd_mask<UVec_b, UAbi>& other) noexcept : v_(other.v_) {}
 			template<typename UVec_b>
 			constexpr explicit Vec_basic_simd_mask(const Vec_basic_simd_mask<UVec_b>& other) noexcept : v_(other.v_) {}
 			template<typename G> constexpr explicit Vec_basic_simd_mask(G&& gen, std::nullptr_t /*TODO: remove*/) noexcept;
