@@ -152,7 +152,7 @@ namespace simd
 			constexpr void copy_from(It first, simd_flags<Flags...> = {})
 			{
 				// TODO: look at simd_flags
-				// However, section 2.4 states "There is hardly any difference in efficiency
+				// However, §2.4 states "There is hardly any difference in efficiency
 				// between `load` and `load_a` on newer microprocessors."
 
 				// "`It` satisfies contiguous_iterator."
@@ -165,7 +165,7 @@ namespace simd
 			constexpr void copy_to(Out first, simd_flags<Flags...> = {}) const
 			{
 				// TODO: look at simd_flags
-				// However, section 2.5 states "There is hardly any difference in efficiency
+				// However, §2.5 states "There is hardly any difference in efficiency
 				// between `store` and `store_a` on newer microprocessors."
 
 				// "`It` satisfies contiguous_iterator."
@@ -176,7 +176,7 @@ namespace simd
 			//constexpr void copy_to(Out first, const mask_type& mask, simd_flags<Flags...> f = {}) const;
 
 			// [simd.subscr]
-			// Section 2.5 of https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
+			// §2.5 of https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
 			// "Note that you can read a vector element with the[] operator, but not write an element."
 			constexpr value_type& operator[](details::size_type) & = delete;
 			constexpr value_type operator[](details::size_type i) const& { return v_[i]; }

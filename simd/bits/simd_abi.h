@@ -70,7 +70,7 @@ namespace simd
 
 		// See tables 2.1 and 2.2 of https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
 		template<size_type N, typename T> struct Vcl_native_abi;
-		template<size_type N, typename T, typename Vec> struct Vector_class_base
+		template<size_type N, typename T, typename Vec> struct Vcl_native_abi_base
 		{
 			using Vector_class = Vec; // e.g., Vec4i
 			static constexpr auto elements_per_vector = N; // aka "width"
@@ -84,7 +84,7 @@ namespace simd
 			using fixed_size = fixed_size_<elements_per_vector, total_bits>;
 		};
 		#define VECTORCLASS_Vcl_native_abi(N_, type_, suffix_) \
-			template<> struct Vcl_native_abi<N_, type_> : public Vector_class_base<N_, type_, Vec ## N_ ## suffix_> { }
+			template<> struct Vcl_native_abi<N_, type_> : public Vcl_native_abi_base<N_, type_, Vec ## N_ ## suffix_> { }
 		#define VECTORCLASS_Vcl_native_abi_integer(N_, bits_, suffix_) \
 			VECTORCLASS_Vcl_native_abi(N_, int ## bits_ ## _t, suffix_); VECTORCLASS_Vcl_native_abi(N_, uint ## bits_ ## _t, u ## suffix_)
 		// 128 Total bits
