@@ -75,7 +75,6 @@ namespace simd
 			// "Implementations should enable explicit conversion from and to implementation-defined types."
 			constexpr explicit operator Vec_type() const { return v_; }
 			constexpr explicit Vec_basic_simd_mask(const Vec_type& init) : v_(init) {}
-		private:
 			Vec_type v_;
 		};
 	}

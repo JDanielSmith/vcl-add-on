@@ -88,6 +88,20 @@ namespace simd
 		friend constexpr basic_simd operator<<(const basic_simd&, details::size_type) noexcept;
 		friend constexpr basic_simd operator>>(const basic_simd&, details::size_type) noexcept;
 
+		// [simd.cassign]
+		friend constexpr basic_simd& operator+=(basic_simd&, const basic_simd&) noexcept;
+		friend constexpr basic_simd& operator-=(basic_simd&, const basic_simd&) noexcept;
+		friend constexpr basic_simd& operator*=(basic_simd&, const basic_simd&) noexcept;
+		friend constexpr basic_simd& operator/=(basic_simd&, const basic_simd&) noexcept;
+		friend constexpr basic_simd& operator%=(basic_simd&, const basic_simd&) noexcept;
+		friend constexpr basic_simd& operator&=(basic_simd&, const basic_simd&) noexcept;
+		friend constexpr basic_simd& operator|=(basic_simd&, const basic_simd&) noexcept;
+		friend constexpr basic_simd& operator^=(basic_simd&, const basic_simd&) noexcept;
+		friend constexpr basic_simd& operator<<=(basic_simd&, const basic_simd&) noexcept;
+		friend constexpr basic_simd& operator>>=(basic_simd&, const basic_simd&) noexcept;
+		friend constexpr basic_simd& operator<<=(basic_simd&, details::size_type) noexcept;
+		friend constexpr basic_simd& operator>>=(basic_simd&, details::size_type) noexcept;
+
 		// [simd.comparison]
 		friend constexpr mask_type operator==(const basic_simd&, const basic_simd&) noexcept;
 		friend constexpr mask_type operator!=(const basic_simd&, const basic_simd&) noexcept;
@@ -166,8 +180,6 @@ namespace simd
 			// "Note that you can read a vector element with the[] operator, but not write an element."
 			constexpr value_type& operator[](details::size_type) & = delete;
 			constexpr value_type operator[](details::size_type i) const& { return v_[i]; }
-
-		private:
 			Vec_type v_;
 		};
 	}

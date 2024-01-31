@@ -104,6 +104,33 @@ namespace simd
 	}
 	#undef VECTORCLASS_basic_simd_binary
 
+	#define VECTORCLASS_basic_simd_cassign(OPERATOR_) \
+		template<typename T, typename Abi> constexpr auto operator OPERATOR_(basic_simd<T, Abi>& lhs, const basic_simd<T, Abi>& rhs) noexcept { \
+			lhs.v_ OPERATOR_ rhs.v_; return lhs; } \
+		template<typename T, typename Abi, typename U> constexpr auto operator OPERATOR_(basic_simd<T, Abi>& lhs, const U& rhs) noexcept { \
+			lhs.v_ OPERATOR_ rhs; return lhs; }
+	VECTORCLASS_basic_simd_cassign(+=);
+	VECTORCLASS_basic_simd_cassign(-=);
+	VECTORCLASS_basic_simd_cassign(*=);
+	VECTORCLASS_basic_simd_cassign(/=);
+	VECTORCLASS_basic_simd_cassign(%=);
+	VECTORCLASS_basic_simd_cassign(&= );
+	VECTORCLASS_basic_simd_cassign(|=);
+	VECTORCLASS_basic_simd_cassign(^= );
+	VECTORCLASS_basic_simd_cassign(<<= );
+	VECTORCLASS_basic_simd_cassign(>>= );
+	#undef VECTORCLASS_basic_simd_cassign
+	template<typename T, typename Abi, typename U>
+	constexpr auto operator<<=(basic_simd<T, Abi>& lhs, details::size_type rhs) noexcept {
+			lhs.v_ <<= rhs;
+			return lhs;
+	}
+	template<typename T, typename Abi, typename U>
+	constexpr auto operator>>=(basic_simd<T, Abi>& lhs, details::size_type rhs) noexcept {
+		lhs.v_ >>= rhs;
+		return lhs;
+	}
+
 	#define VECTORCLASS_basic_simd_comparison(OPERATOR_) \
 		template<typename T, typename Abi> constexpr auto operator OPERATOR_(const basic_simd<T, Abi>& lhs, const basic_simd<T, Abi>& rhs) noexcept { \
 			using Vec_type = basic_simd<T, Abi>::Vec_type; \
