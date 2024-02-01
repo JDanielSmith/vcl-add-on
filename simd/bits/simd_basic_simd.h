@@ -32,7 +32,8 @@ namespace simd
 	public:
 		using value_type = T;
 		//using reference = see below;
-		using mask_type = basic_simd_mask<T, Abi>; // TODO: basic_simd_mask<sizeof(T), Abi>; ???
+		//using mask_type = basic_simd_mask<sizeof(T), Abi>;
+		using mask_type = basic_simd_mask<T, Abi>;
 		using abi_type = Abi;
 
 		// "This member is present even if the particular basic_simd specialization is not supported."
@@ -125,7 +126,8 @@ namespace simd
 			//using reference = see below;
 			using abi_type = details::simd_abi::fixed_size<Vec_type::size()>;
 			//using abi_type = details::Vcl_native_abi<Vec_type::size(), value_type>;
-			using mask_type = basic_simd_mask<value_type, abi_type>; // TODO: basic_simd_mask<sizeof(T), Abi>; ???
+			//using mask_type = basic_simd_mask<sizeof(value_type), abi_type>;
+			using mask_type = basic_simd_mask<value_type, abi_type>;
 
 			static constexpr std::integral_constant<details::size_type, Vec::size()> size;
 

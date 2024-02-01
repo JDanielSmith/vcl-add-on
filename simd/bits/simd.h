@@ -50,13 +50,16 @@ namespace simd
 	/*
 	template<size_t Bytes, class Abi = native-abi<T>> class basic_simd_mask;
 	*/
-	//TODO: template<size_t Bytes, typename Abi> class basic_simd_mask; ???
+	//template<size_t Bytes, typename Abi> class basic_simd_mask;
 	template<typename T, typename Abi> class basic_simd_mask;
 
 	// [simd.creation]
 	// [simd.mask.reductions]
 	// [simd.reductions]
 	// [simd.alg]
+	//template<size_t Bytes, typename Abi, typename T, typename U>
+	//constexpr auto simd_select(const basic_simd_mask<Bytes, Abi>& c, const T& a, const U& b)
+	//	noexcept -> decltype(simd_select_impl(c, a, b));
 	template<typename TMask, typename Abi, typename T, typename U>
 	constexpr auto simd_select(const basic_simd_mask<TMask, Abi>& c, const T& a, const U& b)
 		noexcept -> decltype(simd_select_impl(c, a, b));

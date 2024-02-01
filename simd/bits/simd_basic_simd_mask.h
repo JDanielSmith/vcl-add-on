@@ -26,20 +26,22 @@ namespace simd
 	/*
 	template<size_t Bytes, class Abi = native-abi<T>> class basic_simd_mask;
 	*/
-	// TODO: template<size_t Bytes, typename Abi = details::simd_abi::native_abi<T>> class basic_simd_mask { ???
+	//template<size_t Bytes, typename Abi = details::simd_abi::fixed_size<Bytes>> class basic_simd_mask {
 	template<typename T, typename Abi = details::simd_abi::native_abi<T>> class basic_simd_mask {
 	public:
 		using value_type = bool;
 		//using reference = see below;
 		using abi_type = Abi;
 
+		//static constexpr auto size = basic_simd<details::integer_from<Bytes>, Abi>::size;
 		static constexpr auto size = basic_simd<details::integer_from<sizeof(T)>, Abi>::size;
 
 		constexpr basic_simd_mask() noexcept = default;
 
 		// [simd.mask.ctor]
 		constexpr explicit basic_simd_mask(value_type v) noexcept;
-		template<typename U, class UAbi>// TODO: template<size_t UBytes, class UAbi>
+		//template<size_t UBytes, class UAbi>
+		template<typename U, class UAbi>
 		constexpr explicit basic_simd_mask(const basic_simd_mask<U, UAbi>& other) noexcept;
 		template<typename G> constexpr explicit basic_simd_mask(G&& gen, std::nullptr_t /*TODO: remove*/) noexcept;
 	};
@@ -69,8 +71,9 @@ namespace simd
 
 			// [simd.ctor]
 			template<typename U> constexpr Vec_basic_simd_mask(U&& value) noexcept : v_(value) {}
-			template<typename UVec_b, typename UAbi>
-			constexpr explicit Vec_basic_simd_mask(const basic_simd_mask<UVec_b, UAbi>& other) noexcept : v_(other.v_) {}
+			//template<size_t UBytes, typename UAbi>
+			template<typename U, typename UAbi>
+			constexpr explicit Vec_basic_simd_mask(const basic_simd_mask<U, UAbi>& other) noexcept : v_(other.v_) {}
 			template<typename UVec_b>
 			constexpr explicit Vec_basic_simd_mask(const Vec_basic_simd_mask<UVec_b>& other) noexcept : v_(other.v_) {}
 			template<typename G> constexpr explicit Vec_basic_simd_mask(G&& gen, std::nullptr_t /*TODO: remove*/) noexcept;
@@ -128,7 +131,7 @@ namespace simd
 	using simd_mask = basic_simd_mask<sizeof(T), deduce-t<T, N>>;
 	*/
 	template<typename T, details::size_type N = basic_simd_mask<T>::size()>
-	using simd_mask = basic_simd_mask<T, details::simd_abi::deduce_t<T, N>>; // TODO: sizeof(T)
+	using simd_mask = basic_simd_mask<T, details::simd_abi::deduce_t<T, N>>;
 }
 
 #ifdef VCL_NAMESPACE
