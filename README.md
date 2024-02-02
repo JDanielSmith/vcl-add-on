@@ -9,4 +9,4 @@ These packages are extensions to the C++ vector class library for specific appli
 * complex. Defines complex number vectors. Operators + - * / etc., and functions. Complex exponential function and logarithm.
 * quaternion. Hyper-complex numbers
 * physical_processors. Detect the number of physical and logical processors on an x86 computer
-* simd. Implementing [std::simd](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p1928r8.pdf) using VCL.
+* simd. Make *VecNt* look more like `[std::simd](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p1928r8.pdf)::simd`.
