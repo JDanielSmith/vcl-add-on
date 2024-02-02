@@ -45,6 +45,30 @@ inline bool all_of(VecB const m)
     return horizontal_and(m);
 }
 
+// These are member-functions on `basic_simd` and `basic_simd_mask`.
+template<typename It, typename VecT>
+inline void copy_from(VecT& this_, It first)
+{
+    // TODO: look at simd_flags
+    // However, §2.4 states "There is hardly any difference in efficiency
+    // between `load` and `load_a` on newer microprocessors."
+
+    // "`It` satisfies contiguous_iterator."
+    const auto mem = &(*first);
+    this_.load(mem);
+}
+template<typename Out, typename VecT>
+constexpr void copy_to(const VecT& this_, Out first)
+{
+    // TODO: look at simd_flags
+    // However, §2.5 states "There is hardly any difference in efficiency
+    // between `store` and `store_a` on newer microprocessors."
+
+    // "`It` satisfies contiguous_iterator."
+    auto mem = &(*first);
+    this_.store(mem);
+}
+
 #ifdef VCL_NAMESPACE
 }
 #endif
