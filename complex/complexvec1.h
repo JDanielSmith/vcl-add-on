@@ -690,7 +690,6 @@ static inline Complex2f interleave_c2 (Vec4f const re, Vec4f const im) {
     return __m128(c);
 }
 
-
 #if MAX_VECTOR_SIZE >= 256
 /*****************************************************************************
 *
@@ -1730,7 +1729,6 @@ static inline Complex1d interleave_c(double const re, double const im) {
     return Complex1d(re, im);
 }
 
-
 #if MAX_VECTOR_SIZE >= 256
 /*****************************************************************************
 *
@@ -2092,7 +2090,6 @@ static inline Complex2d interleave_c (Vec2d const re, Vec2d const im) {
     return  Vec256de(d);
 #endif
 }
-
 
 #endif // if MAX_VECTOR_SIZE >= 256
 
