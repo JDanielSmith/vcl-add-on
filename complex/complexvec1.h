@@ -359,6 +359,12 @@ static inline Complex1f interleave_c (float const re, float const im) {
     return Complex1f(re, im);
 }
 
+// free functions to aid in generic programming
+static inline auto real(const Complex1f& z) { return z.real(); }
+static inline auto imag(const Complex1f& z) { return z.imag(); }
+static inline constexpr size_t size(const Complex1f& z) { return z.size(); }
+static inline constexpr ptrdiff_t ssize(const Complex1f& z) { return z.size(); }
+
 /*****************************************************************************
 *
 *               Class Complex2f: two single precision complex numbers
@@ -689,6 +695,12 @@ static inline Complex2f interleave_c2 (Vec4f const re, Vec4f const im) {
     Vec4f c = blend4<0,4,1,5>(re, im);
     return __m128(c);
 }
+
+// free functions to aid in generic programming
+static inline auto real(const Complex2f& z) { return z.real(); }
+static inline auto imag(const Complex2f& z) { return z.imag(); }
+static inline constexpr size_t size(const Complex2f& z) { return z.size(); }
+static inline constexpr ptrdiff_t ssize(const Complex2f& z) { return z.size(); }
 
 #if MAX_VECTOR_SIZE >= 256
 /*****************************************************************************
@@ -1071,6 +1083,12 @@ static inline Complex4f interleave_c (Vec4f const re, Vec4f const im) {
 #endif
 }
 
+// free functions to aid in generic programming
+static inline auto real(const Complex4f& z) { return z.real(); }
+static inline auto imag(const Complex4f& z) { return z.imag(); }
+static inline constexpr size_t size(const Complex4f& z) { return z.size(); }
+static inline constexpr ptrdiff_t ssize(const Complex4f& z) { return z.size(); }
+
 #endif  // MAX_VECTOR_SIZE >= 256
 
 #if MAX_VECTOR_SIZE >= 512
@@ -1441,6 +1459,12 @@ static inline Complex8f interleave_c (Vec8f const re, Vec8f const im) {
 #endif
 }
 
+// free functions to aid in generic programming
+static inline auto real(const Complex8f& z) { return z.real(); }
+static inline auto imag(const Complex8f& z) { return z.imag(); }
+static inline constexpr size_t size(const Complex8f& z) { return z.size(); }
+static inline constexpr ptrdiff_t ssize(const Complex8f& z) { return z.size(); }
+
 #endif // MAX_VECTOR_SIZE >= 512
 
 /*****************************************************************************
@@ -1728,6 +1752,12 @@ static inline Complex1d select (Vec2db const s, Complex1d const a, Complex1d con
 static inline Complex1d interleave_c(double const re, double const im) {
     return Complex1d(re, im);
 }
+
+// free functions to aid in generic programming
+static inline auto real(const Complex1d& z) { return z.real(); }
+static inline auto imag(const Complex1d& z) { return z.imag(); }
+static inline constexpr size_t size(const Complex1d& z) { return z.size(); }
+static inline constexpr ptrdiff_t ssize(const Complex1d& z) { return z.size(); }
 
 #if MAX_VECTOR_SIZE >= 256
 /*****************************************************************************
@@ -2090,6 +2120,12 @@ static inline Complex2d interleave_c (Vec2d const re, Vec2d const im) {
     return  Vec256de(d);
 #endif
 }
+
+// free functions to aid in generic programming
+static inline auto real(const Complex2d& z) { return z.real(); }
+static inline auto imag(const Complex2d& z) { return z.imag(); }
+static inline constexpr size_t size(const Complex2d& z) { return z.size(); }
+static inline constexpr ptrdiff_t ssize(const Complex2d& z) { return z.size(); }
 
 #endif // if MAX_VECTOR_SIZE >= 256
 
@@ -2518,6 +2554,12 @@ static inline Complex4d to_double (Complex4f const a) {
     return Complex4d(to_double(a.get_low()), to_double(a.get_high()));
 #endif
 }
+
+// free functions to aid in generic programming
+static inline auto real(const Complex4d& z) { return z.real(); }
+static inline auto imag(const Complex4d& z) { return z.imag(); }
+static inline constexpr size_t size(const Complex4d& z) { return z.size(); }
+static inline constexpr ptrdiff_t ssize(const Complex4d& z) { return z.size(); }
 
 #endif  // MAX_VECTOR_SIZE >= 512
 
