@@ -21,6 +21,16 @@
 namespace VCL_NAMESPACE {
 #endif
 
+#ifndef VECTORCLASS_NAMESPACE_details
+    #ifdef VCL_NAMESPACE
+    #define VECTORCLASS_NAMESPACE_details details // e.g., vcl::details
+    #else
+    #define VECTORCLASS_NAMESPACE_details vcl_details // ::vcl_details
+    #endif
+#endif // VCL_NAMESPACE_details
+
+namespace VECTORCLASS_NAMESPACE_details
+{
 // Table 1.1 of https://github.com/vectorclass/add-on/blob/master/complex/complexvec_manual.pdf
 template<int Complex_elements_per_vector, typename T> struct ComplexNt;
 template<> struct ComplexNt<1, float> { using Complex_vector_class = Complex1f; };
@@ -30,21 +40,22 @@ template<> struct ComplexNt<8, float> { using Complex_vector_class = Complex8f; 
 template<> struct ComplexNt<1, double> { using Complex_vector_class = Complex1d; };
 template<> struct ComplexNt<2, double> { using Complex_vector_class = Complex2d; };
 template<> struct ComplexNt<4, double> { using Complex_vector_class = Complex4d; };
+} // namespace VECTORCLASS_NAMESPACE_details
 
 // Complex<4, float> = Complex4f
 template<int Complex_elements_per_vector, typename T> struct Complex
-	: public ComplexNt< Complex_elements_per_vector, T>::Complex_vector_class
+	: public VECTORCLASS_NAMESPACE_details ::ComplexNt< Complex_elements_per_vector, T>::Complex_vector_class
 {
 	//using Complex_vector_class = ComplexNt<Complex_elements_per_vector, T>::Complex_vector_class; // e.g., Complex4f
 	//explicit operator Complex_vector_class() const { return *this; }
 	//explicit Complex(const Complex_vector_class& init) { *this = init; }
 };
 
-// Complexf<4> = Complex4f
+// Complex_f<4> = Complex4f
 template<int Complex_elements_per_vector>
-using Complexf = Complex<Complex_elements_per_vector, float>;
+using Complex_f = Complex<Complex_elements_per_vector, float>;
 template<int Complex_elements_per_vector>
-using Complexd = Complex<Complex_elements_per_vector, double>;
+using Complex_d = Complex<Complex_elements_per_vector, double>;
 
 // Complex4<float> = Complex4f
 template<typename T>
@@ -96,4 +107,3 @@ static inline constexpr ptrdiff_t ssize(const Complex<Complex_elements_per_vecto
 #ifdef VCL_NAMESPACE
 }
 #endif
-
