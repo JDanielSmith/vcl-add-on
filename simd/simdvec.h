@@ -12,6 +12,7 @@
 ******************************************************************************/
 
 #pragma once
+
 #include "vectorclass.h"
 
 #ifdef VCL_NAMESPACE
