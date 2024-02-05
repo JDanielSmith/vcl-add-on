@@ -33,28 +33,25 @@ namespace VCL_NAMESPACE {
 
 namespace simd
 {
-	template<typename T, int N>
-	inline auto round(const basic_simd<T, N>& v)
+	template<typename T, typename Abi>
+	inline basic_simd<T, Abi> round(const basic_simd<T, Abi>& v)
 	{
-		using Vec = basic_simd<T, N>::Vec;
-		return basic_simd<T, N>(round(static_cast<Vec>(v)));
+		using Vec = basic_simd<T, Abi>::Vec;
+		return round(static_cast<Vec>(v));
 	}
 
-	template<typename T, int N>
-	inline auto lround(const basic_simd<T, N>& v)
+	template<typename T, typename Abi>
+	inline basic_simd<int, Abi> lround(const basic_simd<T, Abi>& v)
 	{
-		using Vec = basic_simd<T, N>::Vec;
-
-		const auto result = roundi(static_cast<Vec>(v));
-
-		return basic_simd<int, N>(result);
+		using Vec = basic_simd<T, Abi>::Vec;
+		return roundi(static_cast<Vec>(v));
 	}
 
-	template<typename T, int N>
-	inline auto atan2(const basic_simd<T, N>& y, const basic_simd<T, N>& x)
+	template<typename T, typename Abi>
+	inline basic_simd<T, Abi> atan2(const basic_simd<T, Abi>& y, const basic_simd<T, Abi>& x)
 	{
-		using Vec = basic_simd<T, N>::Vec;
-		return basic_simd<T, N>(atan2(static_cast<Vec>(y), static_cast<Vec>(x)));
+		using Vec = basic_simd<T, Abi>::Vec;
+		return atan2(static_cast<Vec>(y), static_cast<Vec>(x));
 	}
 }
 

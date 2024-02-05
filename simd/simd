@@ -13,6 +13,7 @@
 #pragma once
 
 #include "simd.h"
+#include "simd_traits.h"
 #include "simd_builtin.h"
 #include "simd_math.h"
 #include "simd_alg.h"
