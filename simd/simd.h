@@ -232,42 +232,6 @@ namespace simd
 		constexpr basic_simd operator~() const noexcept;
 		constexpr basic_simd operator+() const noexcept;
 		constexpr basic_simd operator-() const noexcept;
-
-		//// [simd.binary]
-		//friend constexpr basic_simd operator+(const basic_simd&, const basic_simd&) noexcept;
-		//friend constexpr basic_simd operator-(const basic_simd&, const basic_simd&) noexcept;
-		//friend constexpr basic_simd operator*(const basic_simd&, const basic_simd&) noexcept;
-		//friend constexpr basic_simd operator/(const basic_simd&, const basic_simd&) noexcept;
-		//friend constexpr basic_simd operator%(const basic_simd&, const basic_simd&) noexcept;
-		//friend constexpr basic_simd operator&(const basic_simd&, const basic_simd&) noexcept;
-		//friend constexpr basic_simd operator|(const basic_simd&, const basic_simd&) noexcept;
-		//friend constexpr basic_simd operator^(const basic_simd&, const basic_simd&) noexcept;
-		//friend constexpr basic_simd operator<<(const basic_simd&, const basic_simd&) noexcept;
-		//friend constexpr basic_simd operator>>(const basic_simd&, const basic_simd&) noexcept;
-		//friend constexpr basic_simd operator<<(const basic_simd&, details::size_type) noexcept;
-		//friend constexpr basic_simd operator>>(const basic_simd&, details::size_type) noexcept;
-
-		//// [simd.cassign]
-		//friend constexpr basic_simd& operator+=(basic_simd&, const basic_simd&) noexcept;
-		//friend constexpr basic_simd& operator-=(basic_simd&, const basic_simd&) noexcept;
-		//friend constexpr basic_simd& operator*=(basic_simd&, const basic_simd&) noexcept;
-		//friend constexpr basic_simd& operator/=(basic_simd&, const basic_simd&) noexcept;
-		//friend constexpr basic_simd& operator%=(basic_simd&, const basic_simd&) noexcept;
-		//friend constexpr basic_simd& operator&=(basic_simd&, const basic_simd&) noexcept;
-		//friend constexpr basic_simd& operator|=(basic_simd&, const basic_simd&) noexcept;
-		//friend constexpr basic_simd& operator^=(basic_simd&, const basic_simd&) noexcept;
-		//friend constexpr basic_simd& operator<<=(basic_simd&, const basic_simd&) noexcept;
-		//friend constexpr basic_simd& operator>>=(basic_simd&, const basic_simd&) noexcept;
-		//friend constexpr basic_simd& operator<<=(basic_simd&, details::size_type) noexcept;
-		//friend constexpr basic_simd& operator>>=(basic_simd&, details::size_type) noexcept;
-
-		//// [simd.comparison]
-		//friend constexpr mask_type operator==(const basic_simd&, const basic_simd&) noexcept;
-		//friend constexpr mask_type operator!=(const basic_simd&, const basic_simd&) noexcept;
-		//friend constexpr mask_type operator>=(const basic_simd&, const basic_simd&) noexcept;
-		//friend constexpr mask_type operator<=(const basic_simd&, const basic_simd&) noexcept;
-		//friend constexpr mask_type operator>(const basic_simd&, const basic_simd&) noexcept;
-		//friend constexpr mask_type operator<(const basic_simd&, const basic_simd&) noexcept;
 	};
 
 	template<class T>
