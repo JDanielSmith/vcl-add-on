@@ -21,16 +21,18 @@ namespace VCL_NAMESPACE {
 namespace simd
 {
 	template<size_t Bytes, typename Abi, typename T, typename U>
-	constexpr T simd_select(const basic_simd_mask<Bytes, Abi>& c, const T& a, const U& b)
+	constexpr auto simd_select(const basic_simd_mask<Bytes, Abi>& c, const basic_simd<T, Abi>& a, const basic_simd<U, Abi>& b) noexcept
 	{
-		using Vec_b = basic_simd_mask<Bytes, Abi>::Vec;
-		using Vec_t = T::Vec;
-		using Vec_u = U::Vec;
-		return select(static_cast<Vec_b>(c), static_cast<Vec_t>(a), static_cast<Vec_u>(b));
+		return simd_select_impl(c, a, b);
+	}
+	template<size_t Bytes, typename Abi, typename T, typename U>
+	constexpr auto simd_select(const basic_simd_mask<Bytes, Abi>& c, const T& a, const U& b) noexcept
+	{
+		return simd_select_impl(c, basic_simd<T, Abi>(a), basic_simd<U, Abi>(b));
 	}
 
 	template<size_t Bytes, typename Abi>
-	constexpr bool any_of(const basic_simd_mask<Bytes, Abi>& m)
+	constexpr bool any_of(const basic_simd_mask<Bytes, Abi>& m) noexcept
 	{
 		using Vec_b = basic_simd_mask<Bytes, Abi>::Vec;
 		return horizontal_or(static_cast<Vec_b>(m));

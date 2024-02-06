@@ -35,7 +35,7 @@ namespace simd
 		constexpr auto detected_vector_size_bytes = detect_vector_size() / 8;
 		constexpr size_type native_vector_elements(size_t sz)
 		{
-			return detected_vector_size_bytes / sz;
+			return static_cast<size_type>(detected_vector_size_bytes / sz);
 		}
 
 		// "a signed integer type T so that sizeof(T) == Bytes."

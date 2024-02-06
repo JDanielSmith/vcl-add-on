@@ -54,6 +54,12 @@ namespace simd
 		constexpr explicit operator Vec() const { return v_; }
 		constexpr explicit basic_simd_mask(const Vec& init) : v_(init) {}
 
+		// [simd.subscr]
+		// §2.5 of https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
+		// "Note that you can read a vector element with the[] operator, but not write an element."
+		constexpr value_type& operator[](details::size_type) & = delete;
+		constexpr value_type operator[](details::size_type i) const& { return v_[i]; }
+
 	private:
 		Vec v_;
 	};
@@ -143,6 +149,14 @@ namespace simd
 		constexpr basic_simd operator~() const noexcept;
 		constexpr basic_simd operator+() const noexcept;
 		constexpr basic_simd operator-() const noexcept;
+
+		// [simd.cond]
+		friend constexpr basic_simd simd_select_impl(
+			const mask_type& c, const basic_simd& a, const basic_simd& b) noexcept
+		{
+			using Vec_b = mask_type::Vec;
+			return select(static_cast<Vec_b>(c), static_cast<Vec>(a), static_cast<Vec>(b));
+		}
 
 	//private:
 		Vec v_;
