@@ -32,8 +32,20 @@ namespace simd
 			if constexpr (detected_instrset <= instrset::AVX2) return 256;
 			return 512;
 	}
-		constexpr auto detected_vector_size = detect_vector_size();
-		constexpr auto detected_vector_size_bytes = detected_vector_size / 8;
+		constexpr auto detected_vector_size_bytes = detect_vector_size() / 8;
+		constexpr size_type native_vector_elements(size_t sz)
+		{
+			return detected_vector_size_bytes / sz;
+		}
+
+		// "a signed integer type T so that sizeof(T) == Bytes."
+		template <size_t Bytes> struct integer_from_;
+		template<> struct integer_from_<1> { using type = std::int8_t; };
+		template<> struct integer_from_<2> { using type = std::int16_t; };
+		template<> struct integer_from_<4> { using type = std::int32_t; };
+		template<> struct integer_from_<8> { using type = std::int64_t; };
+		template <size_t Bytes>
+		using integer_from = typename integer_from_<Bytes>::type;
 
 		// VecNt<4, int32_t> == Vec4i
 		// https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
@@ -124,18 +136,19 @@ namespace simd
 		template <int Elements_per_vector, typename T>
 		using Boolean_vector_class = VecNb<Vec<Elements_per_vector, T>>::Boolean_vector_class;
 
-		template<size_type N_>
+		template<size_type N_, typename T = void>
 		struct fixed_size
 		{
 			static constexpr auto N = N_;
+			using type = T;
 		};
 		namespace simd_abi
 		{
-			template<size_type N>
-			using fixed_size = details::fixed_size<N>;
+			template<size_type N, typename T = void>
+			using fixed_size = details::fixed_size<N, T>;
 
-			template<typename T, size_type N = detected_vector_size_bytes / sizeof(T)>
-			using native_abi = fixed_size<N>;
+			template<typename T, size_type N = native_vector_elements(sizeof(T))>
+			using native_abi = fixed_size<N, T>;
 
 			template<typename T, size_type N, typename Abi = native_abi<T, N>>
 			struct deduce

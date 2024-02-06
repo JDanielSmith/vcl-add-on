@@ -32,37 +32,45 @@ namespace VCL_NAMESPACE {
 
 namespace simd
 {
-	template<typename T, details::size_type N> struct basic_simd_mask 
+	template<size_t Bytes, typename Abi = details::simd_abi::fixed_size<details::native_vector_elements(Bytes)>> struct basic_simd_mask
 	{
-		using Vec = details::Boolean_vector_class<N, T>; // e.g., Vec4ib
-
 		using value_type = bool;
+		using abi_type = Abi;
+		static constexpr auto N = abi_type::N;
+		using VecNt = abi_type::type; // e.g., Vec4i
+		using Vec = details::Boolean_vector_class<N, VecNt>; // e.g., Vec4ib
+
+		static constexpr auto size = basic_simd<details::integer_from<Bytes>, Abi>::size;
+		static_assert(size == Vec::size());
 
 		constexpr basic_simd_mask() noexcept = default;
 
 		// [simd.ctor]
 		template<typename U> constexpr basic_simd_mask(U&& value) noexcept : v_(value) {}
-		template<typename U, int N>
-		constexpr explicit basic_simd_mask(const basic_simd_mask<U, N>& other) noexcept : v_(other.v_) {}
+		template<size_t UBytes, typename UAbi>
+		constexpr explicit basic_simd_mask(const basic_simd_mask<UBytes, UAbi>& other) noexcept : v_(other.v_) {}
 		template<typename G> constexpr explicit basic_simd_mask(G&& gen, std::nullptr_t /*TODO: remove*/) noexcept;
 		// "Implementations should enable explicit conversion from and to implementation-defined types."
 		constexpr explicit operator Vec() const { return v_; }
 		constexpr explicit basic_simd_mask(const Vec& init) : v_(init) {}
 
-	//private:
+	private:
 		Vec v_;
 	};
 
+	template<typename T, details::size_type N = basic_simd_mask<sizeof(T)>::size()>
+	using simd_mask = basic_simd_mask<sizeof(T), details::simd_abi::deduce_t<T, N>>;
+
 	template<typename T, typename Abi = details::simd_abi::native_abi<T>> struct basic_simd
 	{
-		using abi_type = Abi;
-		static constexpr auto N = abi_type::N;
-		using Vec = details::VecNt<N, T>::Vector_class; // e.g., Vec4i
-
 		using value_type = T;
-		using mask_type = basic_simd_mask<T, N>; // e.g., Vec4ib
+		using mask_type = basic_simd_mask<sizeof(T), Abi>;
+		using abi_type = Abi;
+
+		using Vec = details::VecNt<abi_type::N, T>::Vector_class; // e.g., Vec4i
 
 		static constexpr std::integral_constant<details::size_type, Vec::size()> size;
+		static_assert(size() == Vec::size());
 
 		constexpr basic_simd() noexcept = default;
 
@@ -77,11 +85,14 @@ namespace simd
 				v_.insert(i, gen(i));
 			}
 		}
-		//template<typename It, typename... Flags>
-		//constexpr Vec_basic_simd(It first, simd_flags<Flags...> f = {})
-		//{
-		//	copy_from(first, f);
-		//}
+		template<typename It, typename... Flags>
+		constexpr basic_simd(It first, Flags...)
+		{
+			// TODO: look at simd_flags
+			// However, §2.4 states "There is hardly any difference in efficiency
+			// between `load` and `load_a` on newer microprocessors."
+			copy_from(first);
+		}
 		//template<class It, class... Flags>
 		//constexpr basic_simd(It first, const mask_type& mask, simd_flags<Flags...> = {});
 
