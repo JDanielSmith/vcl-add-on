@@ -37,6 +37,13 @@ namespace simd
 		using Vec_b = basic_simd_mask<Bytes, Abi>::Vec;
 		return horizontal_or(static_cast<Vec_b>(m));
 	}
+
+	template<size_t Bytes, typename Abi>
+	constexpr bool all_of(const basic_simd_mask<Bytes, Abi>& m) noexcept
+	{
+		using Vec_b = basic_simd_mask<Bytes, Abi>::Vec;
+		return horizontal_and(static_cast<Vec_b>(m));
+	}
 }
 
 #ifdef VCL_NAMESPACE
