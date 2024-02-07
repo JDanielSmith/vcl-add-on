@@ -32,6 +32,8 @@ namespace VCL_NAMESPACE {
 
 namespace simd
 {
+	template<typename T, typename Abi = details::simd_abi::native_abi<T>> struct basic_simd;
+
 	template<size_t Bytes, typename Abi = details::simd_abi::fixed_size<details::native_vector_elements(Bytes)>> struct basic_simd_mask
 	{
 		using value_type = bool;
@@ -67,7 +69,7 @@ namespace simd
 	template<typename T, details::size_type N = basic_simd_mask<sizeof(T)>::size()>
 	using simd_mask = basic_simd_mask<sizeof(T), details::simd_abi::deduce_t<T, N>>;
 
-	template<typename T, typename Abi = details::simd_abi::native_abi<T>> struct basic_simd
+	template<typename T, typename Abi> struct basic_simd
 	{
 		using value_type = T;
 		using mask_type = basic_simd_mask<sizeof(T), Abi>;
