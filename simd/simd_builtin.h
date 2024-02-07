@@ -138,6 +138,18 @@ namespace simd
 	VECTORCLASS_basic_simd_comparison(<);
 	#undef VECTORCLASS_basic_simd_comparison
 
+
+	#define VECTORCLASS_basic_simd_mask_binary(OPERATOR_) \
+		template<size_t Bytes, typename Abi> constexpr basic_simd_mask<Bytes, Abi> \
+		operator OPERATOR_(const basic_simd_mask<Bytes, Abi>& lhs, const basic_simd_mask<Bytes, Abi>& rhs) noexcept { \
+			using Vec = basic_simd_mask<Bytes, Abi>::Vec; return static_cast<Vec>(lhs) OPERATOR_ static_cast<Vec>(rhs); }
+	VECTORCLASS_basic_simd_mask_binary(&&);
+	VECTORCLASS_basic_simd_mask_binary(||);
+	VECTORCLASS_basic_simd_mask_binary(&);
+	VECTORCLASS_basic_simd_mask_binary(|);
+	VECTORCLASS_basic_simd_mask_binary(^);
+	#undef VECTORCLASS_basic_simd_mask_binary
+
 }
 
 #ifdef VCL_NAMESPACE
