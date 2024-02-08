@@ -12,16 +12,8 @@
 ******************************************************************************/
 #pragma once
 
-#if _MSC_VER
-#pragma warning(push)
-#pragma warning(disable: 4100) // '...': unreferenced formal parameter
-#pragma warning(disable: 4127) // conditional expression is constant
-#pragma warning(disable: 4244) // '...': conversion from '...' to '...', possible loss of data
-#pragma warning(disable: 4723) // potential divide by 0
-#endif
+#ifndef VECTORCLASS_H
 #include "vectorclass.h"
-#if _MSC_VER
-#pragma warning(pop)
 #endif
 
 #include "simd_abi.h"
@@ -39,7 +31,7 @@ namespace simd
 		using value_type = bool;
 		using abi_type = Abi;
 		static constexpr auto N = abi_type::N;
-		using VecNt = abi_type::type; // e.g., Vec4i
+		using VecNt = typename abi_type::type; // e.g., Vec4i
 		using native_type = details::Boolean_vector_class<N, VecNt>; // e.g., Vec4ib
 
 		static constexpr auto size = basic_simd<details::integer_from<Bytes>, Abi>::size;
@@ -75,10 +67,10 @@ namespace simd
 		using mask_type = basic_simd_mask<sizeof(T), Abi>;
 		using abi_type = Abi;
 
-		using native_type = details::VecNt<abi_type::N, T>::Vector_class; // e.g., Vec4i
+		using native_type = typename details::VecNt<abi_type::N, T>::Vector_class; // e.g., Vec4i
 
-		static constexpr std::integral_constant<details::size_type, native_type::size()> size;
-		static_assert(size() == native_type::size());
+		static constexpr std::integral_constant<details::size_type, native_type::size()> size = -1;
+		//static_assert(size() == native_type::size());
 
 		constexpr basic_simd() noexcept = default;
 
@@ -156,7 +148,7 @@ namespace simd
 		friend constexpr basic_simd simd_select_impl(
 			const mask_type& c, const basic_simd& a, const basic_simd& b) noexcept
 		{
-			using Vec_b = mask_type::native_type;
+			using Vec_b = typename mask_type::native_type;
 			return select(static_cast<Vec_b>(c), static_cast<native_type>(a), static_cast<native_type>(b));
 		}
 

@@ -93,7 +93,7 @@ namespace simd
 
 		// Vec<4, int32_t> = Vec4i
 		template <int Elements_per_vector, typename T>
-		using Vec = VecNt<Elements_per_vector, T>::Vector_class;
+		using Vec = typename VecNt<Elements_per_vector, T>::Vector_class;
 
 
 		// See table 2.3 of https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
@@ -134,7 +134,7 @@ namespace simd
 
 		// Boolean_vector_class<4, i> = Vec4ib
 		template <int Elements_per_vector, typename T>
-		using Boolean_vector_class = VecNb<Vec<Elements_per_vector, T>>::Boolean_vector_class;
+		using Boolean_vector_class = typename VecNb<Vec<Elements_per_vector, T>>::Boolean_vector_class;
 
 		template<size_type N_, typename T = void>
 		struct fixed_size
@@ -156,7 +156,7 @@ namespace simd
 				using type = Abi;
 			};
 			template<typename T, size_type N, typename Abi = native_abi<T, N>>
-			using deduce_t = deduce<T, N, Abi>::type;
+			using deduce_t = typename deduce<T, N, Abi>::type;
 		}
 }
 
