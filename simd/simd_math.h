@@ -36,21 +36,21 @@ namespace simd
 	template<typename T, typename Abi>
 	inline basic_simd<T, Abi> round(const basic_simd<T, Abi>& v)
 	{
-		using Vec = basic_simd<T, Abi>::Vec;
+		using Vec = basic_simd<T, Abi>::native_type;
 		return round(static_cast<Vec>(v));
 	}
 
 	template<typename T, typename Abi>
 	inline basic_simd<int, Abi> lround(const basic_simd<T, Abi>& v)
 	{
-		using Vec = basic_simd<T, Abi>::Vec;
+		using Vec = basic_simd<T, Abi>::native_type;
 		return roundi(static_cast<Vec>(v));
 	}
 
 	template<typename T, typename Abi>
 	inline basic_simd<T, Abi> atan2(const basic_simd<T, Abi>& y, const basic_simd<T, Abi>& x)
 	{
-		using Vec = basic_simd<T, Abi>::Vec;
+		using Vec = basic_simd<T, Abi>::native_type;
 		return atan2(static_cast<Vec>(y), static_cast<Vec>(x));
 	}
 }

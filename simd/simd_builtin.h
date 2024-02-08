@@ -69,9 +69,9 @@ namespace simd
 
 	#define VECTORCLASS_basic_simd_binary(OPERATOR_) \
 		template<typename T, typename Abi> constexpr basic_simd<T, Abi> operator OPERATOR_(const basic_simd<T, Abi>& lhs, const basic_simd<T, Abi>& rhs) noexcept { \
-			using Vec = basic_simd<T, Abi>::Vec; return static_cast<Vec>(lhs) OPERATOR_ static_cast<Vec>(rhs); } \
+			using Vec = basic_simd<T, Abi>::native_type; return static_cast<Vec>(lhs) OPERATOR_ static_cast<Vec>(rhs); } \
 		template<typename T, typename Abi, typename U> constexpr basic_simd<T, Abi> operator OPERATOR_(const basic_simd<T, Abi>& lhs, const U& rhs) noexcept { \
-			using Vec = basic_simd<T, Abi>::Vec; return static_cast<Vec>(lhs) OPERATOR_ rhs; }
+			using Vec = basic_simd<T, Abi>::native_type; return static_cast<Vec>(lhs) OPERATOR_ rhs; }
 	VECTORCLASS_basic_simd_binary(+);
 	VECTORCLASS_basic_simd_binary(-);
 	VECTORCLASS_basic_simd_binary(*);
@@ -125,10 +125,10 @@ namespace simd
 
 	#define VECTORCLASS_basic_simd_comparison(OPERATOR_) \
 		template<typename T, typename Abi> constexpr basic_simd<T, Abi>::mask_type operator OPERATOR_(const basic_simd<T, Abi>& lhs, const basic_simd<T, Abi>& rhs) noexcept { \
-			using Vec = basic_simd<T, Abi>::Vec; \
+			using Vec = basic_simd<T, Abi>::native_type; \
 			return static_cast<Vec>(lhs) OPERATOR_ static_cast<Vec>(rhs); } \
 		template<typename T, typename Abi, typename U> constexpr basic_simd<T, Abi>::mask_type operator OPERATOR_(const basic_simd<T, Abi>& lhs, const U& rhs) noexcept { \
-			using Vec = basic_simd<T, Abi>::Vec; \
+			using Vec = basic_simd<T, Abi>::native_type; \
 			return static_cast<Vec>(lhs) OPERATOR_ rhs; }
 	VECTORCLASS_basic_simd_comparison(==);
 	VECTORCLASS_basic_simd_comparison(!=);
@@ -142,7 +142,7 @@ namespace simd
 	#define VECTORCLASS_basic_simd_mask_binary(OPERATOR_) \
 		template<size_t Bytes, typename Abi> constexpr basic_simd_mask<Bytes, Abi> \
 		operator OPERATOR_(const basic_simd_mask<Bytes, Abi>& lhs, const basic_simd_mask<Bytes, Abi>& rhs) noexcept { \
-			using Vec = basic_simd_mask<Bytes, Abi>::Vec; return static_cast<Vec>(lhs) OPERATOR_ static_cast<Vec>(rhs); }
+			using Vec = basic_simd_mask<Bytes, Abi>::native_type; return static_cast<Vec>(lhs) OPERATOR_ static_cast<Vec>(rhs); }
 	VECTORCLASS_basic_simd_mask_binary(&&);
 	VECTORCLASS_basic_simd_mask_binary(||);
 	VECTORCLASS_basic_simd_mask_binary(&);

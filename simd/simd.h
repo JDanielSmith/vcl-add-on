@@ -40,10 +40,10 @@ namespace simd
 		using abi_type = Abi;
 		static constexpr auto N = abi_type::N;
 		using VecNt = abi_type::type; // e.g., Vec4i
-		using Vec = details::Boolean_vector_class<N, VecNt>; // e.g., Vec4ib
+		using native_type = details::Boolean_vector_class<N, VecNt>; // e.g., Vec4ib
 
 		static constexpr auto size = basic_simd<details::integer_from<Bytes>, Abi>::size;
-		static_assert(size == Vec::size());
+		static_assert(size == native_type::size());
 
 		constexpr basic_simd_mask() noexcept = default;
 
@@ -53,8 +53,8 @@ namespace simd
 		constexpr explicit basic_simd_mask(const basic_simd_mask<UBytes, UAbi>& other) noexcept : v_(other.v_) {}
 		template<typename G> constexpr explicit basic_simd_mask(G&& gen, std::nullptr_t /*TODO: remove*/) noexcept;
 		// "Implementations should enable explicit conversion from and to implementation-defined types."
-		constexpr explicit operator Vec() const { return v_; }
-		constexpr explicit basic_simd_mask(const Vec& init) : v_(init) {}
+		constexpr explicit operator native_type() const { return v_; }
+		constexpr explicit basic_simd_mask(const native_type& init) : v_(init) {}
 
 		// [simd.subscr]
 		// §2.5 of https://github.com/vectorclass/manual/raw/master/vcl_manual.pdf
@@ -63,7 +63,7 @@ namespace simd
 		constexpr value_type operator[](details::size_type i) const& { return v_[i]; }
 
 	private:
-		Vec v_;
+		native_type v_;
 	};
 
 	template<typename T, details::size_type N = basic_simd_mask<sizeof(T)>::size()>
@@ -75,10 +75,10 @@ namespace simd
 		using mask_type = basic_simd_mask<sizeof(T), Abi>;
 		using abi_type = Abi;
 
-		using Vec = details::VecNt<abi_type::N, T>::Vector_class; // e.g., Vec4i
+		using native_type = details::VecNt<abi_type::N, T>::Vector_class; // e.g., Vec4i
 
-		static constexpr std::integral_constant<details::size_type, Vec::size()> size;
-		static_assert(size() == Vec::size());
+		static constexpr std::integral_constant<details::size_type, native_type::size()> size;
+		static_assert(size() == native_type::size());
 
 		constexpr basic_simd() noexcept = default;
 
@@ -105,8 +105,8 @@ namespace simd
 		//constexpr basic_simd(It first, const mask_type& mask, simd_flags<Flags...> = {});
 
 		// "Implementations should enable explicit conversion from and to implementation-defined types."
-		constexpr explicit operator Vec() const { return v_; }
-		constexpr explicit basic_simd(const Vec& init) : v_(init) {}
+		constexpr explicit operator native_type() const { return v_; }
+		constexpr explicit basic_simd(const native_type& init) : v_(init) {}
 
 		// [simd.copy]
 		template<typename It>
@@ -156,12 +156,12 @@ namespace simd
 		friend constexpr basic_simd simd_select_impl(
 			const mask_type& c, const basic_simd& a, const basic_simd& b) noexcept
 		{
-			using Vec_b = mask_type::Vec;
-			return select(static_cast<Vec_b>(c), static_cast<Vec>(a), static_cast<Vec>(b));
+			using Vec_b = mask_type::native_type;
+			return select(static_cast<Vec_b>(c), static_cast<native_type>(a), static_cast<native_type>(b));
 		}
 
 	//private:
-		Vec v_;
+		native_type v_;
 	};
 
 	template<typename T, details::size_type N = basic_simd<T>::size()>
