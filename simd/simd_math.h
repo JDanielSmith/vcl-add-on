@@ -14,34 +14,64 @@
 
 #include "simd.h"
 
+#ifndef VECTORMATH_EXP_H
+#include "vectormath_exp.h"
+#endif
+
+#ifndef VECTORMATH_TRIG_H
+#include "vectormath_trig.h"
+#endif
+
+#ifndef VECTORMATH_TRIG_H
+#include "vectormath_trig.h"
+#endif
+
+#ifndef VECTORMATH_HYP_H
+#include "vectormath_hyp.h"
+#endif
+
 #ifdef VCL_NAMESPACE
 namespace VCL_NAMESPACE {
 #endif
 
 namespace simd
 {
-	template<typename T, typename Abi>
-	inline basic_simd<T, Abi> round(const basic_simd<T, Abi>& v)
-	{
-		using Vec = typename basic_simd<T, Abi>::native_type;
-		return round(static_cast<Vec>(v));
-	}
+	#define VECTORCLASS_basic_simd_math1(func_) \
+		template<typename T, typename Abi> inline basic_simd<T, Abi> func_(const basic_simd<T, Abi>& v) { \
+			using Vec = typename basic_simd<T, Abi>::native_type; return func_(static_cast<Vec>(v)); }
+	#define VECTORCLASS_basic_simd_math2(func_) \
+		template<typename T, typename Abi> inline basic_simd<T, Abi> func_(const basic_simd<T, Abi>& a, const basic_simd<T, Abi>& b) { \
+			using Vec = typename basic_simd<T, Abi>::native_type; return func_(static_cast<Vec>(a), static_cast<Vec>(b)); }
 
+	VECTORCLASS_basic_simd_math1(abs);
+	VECTORCLASS_basic_simd_math1(round);
 	template<typename T, typename Abi>
-	inline basic_simd<int, Abi> lround(const basic_simd<T, Abi>& v)
+	inline basic_simd<int, Abi> lround(const basic_simd<T, Abi>& v) // TODO: `long`, not `int`
 	{
 		using Vec = typename basic_simd<T, Abi>::native_type;
 		return roundi(static_cast<Vec>(v));
 	}
+	VECTORCLASS_basic_simd_math1(sqrt);
+	VECTORCLASS_basic_simd_math1(ceil);
+	VECTORCLASS_basic_simd_math1(floor);
 
-	template<typename T, typename Abi>
-	inline basic_simd<T, Abi> atan2(const basic_simd<T, Abi>& y, const basic_simd<T, Abi>& x)
-	{
-		using Vec = typename basic_simd<T, Abi>::native_type;
-		return atan2(static_cast<Vec>(y), static_cast<Vec>(x));
-	}
+	VECTORCLASS_basic_simd_math1(sin);
+	VECTORCLASS_basic_simd_math1(cos);
+	VECTORCLASS_basic_simd_math1(tan);
+	VECTORCLASS_basic_simd_math1(asin);
+	VECTORCLASS_basic_simd_math1(acos);
+	VECTORCLASS_basic_simd_math1(atan);
+	VECTORCLASS_basic_simd_math2(atan2);
+	VECTORCLASS_basic_simd_math1(sinh);
+	VECTORCLASS_basic_simd_math1(cosh);
+	VECTORCLASS_basic_simd_math1(tanh);
+	VECTORCLASS_basic_simd_math1(asinh);
+	VECTORCLASS_basic_simd_math1(acosh);
+	VECTORCLASS_basic_simd_math1(atanh);
+
+	#undef VECTORCLASS_basic_simd_math1
+	#undef VECTORCLASS_basic_simd_math
 }
-
 #ifdef VCL_NAMESPACE
 }
 #endif
