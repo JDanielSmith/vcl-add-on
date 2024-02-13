@@ -346,7 +346,7 @@ static inline Complex1f csqrt(Complex1f const a) {
 
 
 // function select
-static inline Complex1f select (bool s, Complex1f const a, Complex1f const b) {
+static inline Complex1f select (bool s, Complex1f const a, Complex1f const b) noexcept {
     return s ? a : b;
 }
 static inline Complex1f select (Vec4fb const s, Complex1f const a, Complex1f const b) {
@@ -392,16 +392,16 @@ public:
         xmm = _mm_movelh_ps(a0, a1);
     }
     // Constructor to convert from type __m128 used in intrinsics:
-    Complex2f(__m128 const x) {
+    Complex2f(__m128 const x) noexcept {
         xmm = x;
     }
     // Assignment operator to convert from type __m128 used in intrinsics:
-    Complex2f & operator = (__m128 const x) {
+    Complex2f & operator = (__m128 const x) noexcept {
         xmm = x;
         return *this;
     }
     // Type cast operator to convert to __m128 used in intrinsics
-    operator __m128() const {
+    operator __m128() const noexcept {
         return xmm;
     }
     // Member function to convert to vector
